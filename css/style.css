@@ -1,0 +1,172 @@
+/* TOEIC Reading 練習アプリ */
+:root {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --ink: #1f2a37;
+  --sub: #64748b;
+  --accent: #2563eb;
+  --accent-soft: #dbeafe;
+  --ok: #2e7d32;
+  --ng: #d32f2f;
+  --line: #e2e8f0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  line-height: 1.6;
+}
+
+main { max-width: 720px; margin: 0 auto; padding: 16px 16px 64px; }
+
+.hidden { display: none !important; }
+
+#storage-warning {
+  background: #fff3cd; color: #7a5c00;
+  padding: 10px 16px; text-align: center; font-size: 14px;
+}
+
+h1 { font-size: 24px; margin: 16px 0 4px; }
+h2 { font-size: 18px; margin: 24px 0 8px; }
+.subtitle { color: var(--sub); font-size: 13px; margin-bottom: 20px; }
+
+/* カード */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card h3 { margin: 0 0 4px; font-size: 16px; }
+.card .meta { color: var(--sub); font-size: 13px; margin-bottom: 10px; }
+.card .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.card .half-row { margin-top: 8px; color: var(--sub); font-size: 14px; }
+
+/* ボタン */
+button {
+  font: inherit; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--card); color: var(--ink);
+  padding: 8px 14px;
+}
+button:hover { border-color: var(--accent); }
+button.primary {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+button.primary:hover { background: #1d4ed8; }
+button:disabled { opacity: 0.4; cursor: default; }
+
+select, input[type="file"] { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); }
+
+.subject-tabs { display: flex; gap: 8px; margin: 8px 0 4px; }
+.subject-tab { border-radius: 999px; padding: 6px 18px; }
+.subject-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+
+/* テスト画面 */
+.test-header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; gap: 8px;
+}
+.timer { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.timer.warning { color: var(--ng); }
+.progress { color: var(--sub); font-size: 14px; }
+
+.qnav { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0 16px; }
+.qnav-btn {
+  width: 34px; height: 30px; padding: 0; font-size: 12px;
+  border-radius: 6px; color: var(--sub);
+}
+.qnav-btn.answered { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
+.qnav-btn.current { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+.passage {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px; margin-bottom: 12px;
+  white-space: pre-wrap; font-size: 14.5px;
+}
+.passage .passage-title { font-weight: 700; color: var(--sub); font-size: 13px; margin-bottom: 8px; }
+
+.question-text { font-size: 16px; margin: 12px 0; white-space: pre-wrap; }
+
+.choices { display: flex; flex-direction: column; gap: 8px; }
+.choice-btn {
+  text-align: left; padding: 12px 14px; border-radius: 10px;
+  background: var(--card); font-size: 15px;
+}
+.choice-btn .choice-label { font-weight: 700; margin-right: 8px; color: var(--sub); }
+.choice-btn.selected {
+  background: var(--accent-soft); border-color: var(--accent);
+}
+.choice-btn.selected .choice-label { color: var(--accent); }
+
+.test-footer { display: flex; justify-content: space-between; gap: 8px; margin-top: 20px; }
+
+/* 結果画面 */
+.score-big { font-size: 32px; font-weight: 700; margin: 8px 0; }
+.correct { color: var(--ok); }
+.wrong { color: var(--ng); }
+
+.bar-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 14px; }
+.bar-row .bar-label { width: 9em; flex-shrink: 0; }
+.bar-row .bar-track { flex: 1; background: var(--line); border-radius: 6px; height: 14px; overflow: hidden; }
+.bar-row .bar-fill { height: 100%; background: var(--accent); border-radius: 6px; }
+.bar-row .bar-value { width: 7em; text-align: right; color: var(--sub); font-size: 13px; }
+
+.result-item {
+  border: 1px solid var(--line); border-radius: 10px; background: var(--card);
+  margin-bottom: 8px; overflow: hidden;
+}
+.result-item summary {
+  padding: 10px 14px; cursor: pointer; list-style: none;
+  display: flex; gap: 10px; align-items: baseline;
+}
+.result-item summary::-webkit-details-marker { display: none; }
+.result-item .mark { font-weight: 700; width: 1.4em; }
+.result-item .snippet { color: var(--sub); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.result-detail { padding: 0 14px 14px; border-top: 1px solid var(--line); }
+.result-choice { padding: 8px 10px; border-radius: 8px; margin: 6px 0; font-size: 14px; border: 1px solid var(--line); }
+.result-choice.is-answer { border-color: var(--ok); background: #ecf7ee; }
+.result-choice.is-chosen-wrong { border-color: var(--ng); background: #fdeeee; }
+.badge {
+  display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 10px;
+  margin-left: 8px; color: #fff; vertical-align: middle;
+}
+.badge.badge-ok { background: var(--ok); }
+.badge.badge-you { background: var(--ng); }
+.explanation {
+  background: #f8fafc; border-radius: 8px; padding: 10px 12px;
+  font-size: 14px; margin-top: 10px; white-space: pre-wrap;
+}
+
+/* 分析画面 */
+.weak-card { border-left: 4px solid var(--ng); }
+table.history { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--card); border-radius: 12px; }
+table.history th, table.history td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+table.history th { color: var(--sub); font-weight: 600; font-size: 13px; }
+
+/* 復習設定パネル */
+#review-panel .field { margin: 10px 0; }
+#review-panel label { margin-right: 12px; }
+
+/* ディクテーション */
+.dict-blank { width: 7em; margin: 0 4px; padding: 4px 6px; }
+.dict-blank-line, .dict-result-line { line-height: 2.2; font-size: 16px; margin: 12px 0; }
+.dict-word { white-space: pre; }
+.dict-close { color: #b26a00; }          /* 惜しい（アクサン/軽微な違い） */
+.score-line { font-size: 20px; font-weight: 700; margin: 8px 0; }
+#dict-sentence { width: 100%; font: inherit; padding: 10px; border-radius: 8px; border: 1px solid var(--line); }
+
+@media (max-width: 480px) {
+  h1 { font-size: 20px; }
+  .timer { font-size: 19px; }
+  .bar-row .bar-label { width: 7.5em; font-size: 12.5px; }
+}
