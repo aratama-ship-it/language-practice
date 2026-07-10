@@ -4,7 +4,7 @@
 四択クイズ、10分版、ディクテーション（書き取り）練習ができ、成績を蓄積して
 得意・苦手分野を分析します。
 
-**公開ページ:** （GitHub Pages 有効化後にURLが入ります）
+**公開ページ:** https://aratama-ship-it.github.io/language-practice/
 
 ## 機能
 
