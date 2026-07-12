@@ -165,6 +165,10 @@ table.history th { color: var(--sub); font-weight: 600; font-size: 13px; }
 .score-line { font-size: 20px; font-weight: 700; margin: 8px 0; }
 #dict-sentence { width: 100%; font: inherit; padding: 10px; border-radius: 8px; border: 1px solid var(--line); }
 
+/* リスニング */
+.lis-qblock { margin: 14px 0; }
+.lis-result { padding: 6px 10px; border-radius: 8px; margin: 6px 0; font-size: 14px; }
+
 @media (max-width: 480px) {
   h1 { font-size: 20px; }
   .timer { font-size: 19px; }

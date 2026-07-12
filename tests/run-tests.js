@@ -314,5 +314,61 @@ if (Dict && DICT) {
   assert(tw.length === 2, "つまずいた語は2種");
 }
 
+// ---- listening.js（採点ロジック） ----
+["js/listening.js"].forEach(f => { if (fs.existsSync(path.join(root, f))) load(f); });
+const Lis = ctx.Listening;
+section("listening-logic");
+assert(Lis, "Listening が定義されている");
+if (Lis) {
+  const qs = [
+    { id: "l1-p1-q1", answer: 0, category: "応答選択" },
+    { id: "l1-p2-q1", answer: 2, category: "目的・概要" },
+    { id: "l1-p2-q2", answer: 1, category: "詳細" }
+  ];
+  const g = Lis.gradeQuestions(qs, { "l1-p1-q1": 0, "l1-p2-q1": 2, "l1-p2-q2": 3 });
+  assert(g.total === 3 && g.correct === 2, "3問中2問正解");
+  assert(g.rate === 2 / 3, "rate 集計");
+  assert(g.results.find(r => r.questionId === "l1-p2-q2").correct === false, "誤答判定");
+  const g2 = Lis.gradeQuestions(qs, { "l1-p1-q1": null });
+  assert(g2.correct === 0, "未回答は不正解");
+}
+
+// ---- listening data ----
+["js/data/listening/index.js", "js/data/listening/en.js", "js/data/listening/fr.js"]
+  .forEach(f => { if (fs.existsSync(path.join(root, f))) load(f); });
+const LISTEN = ctx.LISTEN;
+section("listening-data");
+assert(LISTEN, "LISTEN が定義されている");
+const LIS_EXPECT = { toeic: 18, french: 18 };
+const LIS_CATS = ["応答選択", "目的・概要", "詳細", "言い換え・推測", "次の行動・依頼", "話し手・場面"];
+if (LISTEN) {
+  for (const subjId of Object.keys(LIS_EXPECT)) {
+    const subj = LISTEN[subjId];
+    assert(subj, `${subjId} が存在する`);
+    if (!subj) continue;
+    assert(subj.lang && subj.storageKey, `${subjId} に lang/storageKey`);
+    assert(subj.categories.length === 6, `${subjId} カテゴリ6つ`);
+    subj.categories.forEach(c => assert(LIS_CATS.indexOf(c) >= 0, `${subjId} カテゴリ名 ${c} が規定内`));
+    const passages = LISTEN.passages(subjId);
+    const questions = LISTEN.questions(subjId);
+    assert(questions.length === LIS_EXPECT[subjId], `${subjId} は${LIS_EXPECT[subjId]}問（実際: ${questions.length}）`);
+    for (const p of passages) {
+      assert(["qa", "conversation", "talk"].indexOf(p.type) >= 0, `${p.id}: type が規定内 (${p.type})`);
+      assert(Array.isArray(p.lines) && p.lines.length >= 1, `${p.id}: lines が1つ以上`);
+      p.lines.forEach(ln => assert(ln.speaker !== undefined && ln.text, `${p.id}: line に speaker/text`));
+      assert(Array.isArray(p.questions) && p.questions.length >= 1, `${p.id}: questions が1つ以上`);
+      if (p.type === "qa") assert(p.questions.length === 1, `${p.id}: qa は設問1つ`);
+      p.questions.forEach(function (q) {
+        assert(/^l\d+-p\d+-q\d+$/.test(q.id), `${q.id}: 設問ID形式`);
+        var expectChoices = p.type === "qa" ? 3 : 4;
+        assert(q.choices.length === expectChoices, `${q.id}: 選択肢が${expectChoices}つ`);
+        assert(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < expectChoices, `${q.id}: answer 範囲内`);
+        assert(subj.categories.indexOf(q.category) >= 0, `${q.id}: category 規定内 (${q.category})`);
+        assert(q.q !== undefined, `${q.id}: 設問文 q がある`);
+      });
+    }
+  }
+}
+
 console.log(failures === 0 ? "ALL TESTS PASSED" : `${failures} FAILURES`);
 process.exit(failures === 0 ? 0 : 1);
