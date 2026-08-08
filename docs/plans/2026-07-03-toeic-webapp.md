@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- 配置先: `/Users/arataurawa/Library/Mobile Documents/com~apple~CloudDocs/claude code files/app-dev/toeic-webapp/`（以下、パスはここからの相対）
+- 配置先: `apps/language-app/toeic-webapp/`（以下、パスはここからの相対）
 - **gitリポジトリではない**（iCloudフォルダ）。コミットステップの代わりに各タスク末尾で `node tests/run-tests.js` を実行して全テスト green を確認する
 - ES modules・fetch・npm依存・ビルドツール禁止（file:// で動作すること）
 - UIの文言はすべて日本語

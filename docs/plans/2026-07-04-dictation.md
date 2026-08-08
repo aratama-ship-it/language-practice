@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- 配置先: `/Users/arataurawa/Library/Mobile Documents/com~apple~CloudDocs/claude code files/app-dev/toeic-webapp/`（パスはここからの相対）
+- 配置先: `apps/language-app/toeic-webapp/`（パスはここからの相対）
 - **gitリポジトリではない**。各タスク末尾で `node tests/run-tests.js` が `ALL TESTS PASSED` を確認
 - ES modules・fetch・npm依存・ビルド禁止。UI文言は日本語。仏語文はアクサンを正しく付与
 - 既存 MCQ の挙動・保存キー・テストを一切変えない

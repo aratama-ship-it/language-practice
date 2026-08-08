@@ -12,8 +12,8 @@
 
 ## Global Constraints
 
-- 配置先: `/Users/arataurawa/Library/Mobile Documents/com~apple~CloudDocs/claude code files/app-dev/toeic-webapp/`（パスはここからの相対）
-- **gitリポジトリ**（`app-dev/toeic-webapp` 自体がリポジトリ、GitHub Pages公開中）。各タスク末尾で `node tests/run-tests.js` が `ALL TESTS PASSED` を確認。最後に commit/push で Pages 反映
+- 配置先: `apps/language-app/toeic-webapp/`（パスはここからの相対）
+- **gitリポジトリ**（`apps/language-app/toeic-webapp` 自体がリポジトリ、GitHub Pages公開中）。各タスク末尾で `node tests/run-tests.js` が `ALL TESTS PASSED` を確認。最後に commit/push で Pages 反映
 - ES modules・fetch・npm依存・ビルド禁止。UI文言は日本語。仏語文はアクサンを正しく付与
 - 既存 MCQ・ディクテーションの挙動・保存キー・テストを一切変えない
 - リスニング保存キー: `toeic-listening-data` / `french-listening-data`。データ版: `1`

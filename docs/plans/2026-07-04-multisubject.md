@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- 配置先: `/Users/arataurawa/Library/Mobile Documents/com~apple~CloudDocs/claude code files/app-dev/toeic-webapp/`（パスはここからの相対）
+- 配置先: `apps/language-app/toeic-webapp/`（パスはここからの相対）
 - **gitリポジトリではない**。コミットの代わりに各タスク末尾で `node tests/run-tests.js` が `ALL TESTS PASSED` になることを確認する
 - ES modules・fetch・npm依存・ビルド禁止（file:// 動作を維持）
 - UI文言は日本語。フランス語本文はアクサン（é, è, à, ç 等）を正しく付与

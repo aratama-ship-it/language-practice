@@ -11,7 +11,7 @@
 
 ## 技術構成
 
-- **静的アプリ**: `app-dev/toeic-webapp/` に配置。`index.html` をブラウザで開くだけで動作（サーバー・ビルド不要）
+- **静的アプリ**: `apps/language-app/toeic-webapp/` に配置。`index.html` をブラウザで開くだけで動作（サーバー・ビルド不要）
 - ファイル構成:
   - `index.html` — エントリポイント
   - `css/style.css` — スタイル

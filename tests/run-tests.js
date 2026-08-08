@@ -370,5 +370,53 @@ if (LISTEN) {
   }
 }
 
+// ---- PWA ----
+section("pwa-manifest");
+let manifest = null;
+try {
+  manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));
+} catch (error) {
+  assert(false, "manifest.json が妥当な JSON である");
+}
+if (manifest) {
+  assert(Array.isArray(manifest.icons) && manifest.icons.length > 0, "manifest に icons がある");
+  if (Array.isArray(manifest.icons)) {
+    manifest.icons.forEach(icon => {
+      assert(icon.src && fs.existsSync(path.join(root, icon.src)), `${icon.src}: アイコンが存在する`);
+    });
+  }
+}
+
+section("pwa-assets");
+const swPath = path.join(root, "sw.js");
+const swBefore = fs.existsSync(swPath) ? fs.readFileSync(swPath, "utf8") : null;
+try {
+  require("child_process").execFileSync(process.execPath, [path.join(root, "tools/build-sw.js")]);
+} catch (error) {
+  assert(false, "tools/build-sw.js を実行できる");
+}
+const swAfter = fs.existsSync(swPath) ? fs.readFileSync(swPath, "utf8") : null;
+assert(swBefore !== null && swBefore === swAfter, "sw.js が build-sw.js の生成内容と一致する");
+
+if (swAfter) {
+  const match = swAfter.match(/const ASSETS = (\[[\s\S]*?\]);/);
+  assert(match, "sw.js に ASSETS がある");
+  if (match) {
+    let assets = [];
+    try {
+      assets = JSON.parse(match[1]);
+    } catch (error) {
+      assert(false, "sw.js の ASSETS が妥当な配列である");
+    }
+
+    const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+    const refs = [];
+    const refPattern = /<(?:script\b[^>]*\bsrc|link\b[^>]*\bhref)=["']([^"']+)["']/gi;
+    let refMatch;
+    while ((refMatch = refPattern.exec(html)) !== null) refs.push(refMatch[1]);
+    refs.forEach(ref => assert(assets.includes(ref), `${ref}: index.html の参照が ASSETS に含まれる`));
+  }
+}
+
 console.log(failures === 0 ? "ALL TESTS PASSED" : `${failures} FAILURES`);
 process.exit(failures === 0 ? 0 : 1);

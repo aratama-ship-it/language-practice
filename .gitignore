@@ -1,3 +1,6 @@
 .DS_Store
 *.log
 node_modules/
+
+# アイコンの目視確認用プレビュー（中間生成物）
+icons/_preview.png

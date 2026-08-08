@@ -1,0 +1,17 @@
+{
+  "name": "英仏練習 — TOEIC・フランス語",
+  "short_name": "英仏練習",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101f38",
+  "theme_color": "#101f38",
+  "description": "TOEIC（Part5/6/7）とフランス語の問題演習・ディクテーション・リスニングをまとめた練習アプリ。",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
