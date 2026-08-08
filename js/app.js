@@ -72,6 +72,14 @@ var App = {
     var root = document.getElementById("screen-home");
     this.clear(root);
 
+    // バージョン表示（端末のアプリが最新に入れ替わったかを目視で確認するため、一番上に出す）
+    if (typeof APP_VERSION !== "undefined") {
+      root.appendChild(this.el("div", { class: "app-version" }, [
+        this.el("strong", { text: "ver." + APP_VERSION.build }),
+        " ・ " + APP_VERSION.date + " ・ " + APP_VERSION.hash
+      ]));
+    }
+
     // 教科タブ
     var tabs = this.el("div", { class: "subject-tabs" });
     BANK.ids().forEach(function (id) {

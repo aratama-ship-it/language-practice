@@ -32,10 +32,44 @@ function collectFiles(dir, prefix) {
   return files;
 }
 
-const assets = collectFiles(root, "").sort();
+// js/version.js は自身がこのスクリプトの生成物なので、ハッシュの対象から外す
+// （含めると、採番を書き込むたびにハッシュが変わって永久に落ち着かない）。
+const VERSION_FILE = "js/version.js";
+const assets = collectFiles(root, "").filter(a => a !== VERSION_FILE).sort();
+
 const hash = crypto.createHash("sha256");
 for (const asset of assets) hash.update(fs.readFileSync(path.join(root, asset)));
-const version = `v-${hash.digest("hex").slice(0, 10)}`;
+const digest = hash.digest("hex").slice(0, 10);
+const version = `v-${digest}`;
+
+// ---- 画面に出す通し番号 ----
+// 内容が変わったときだけ +1 する。変わっていなければ何度実行しても同じ結果になる
+// （テストが build-sw.js を実行して生成物を突き合わせるため、冪等でないと落ちる）。
+const versionJsonPath = path.join(root, "version.json");
+let info = { build: 0, hash: "", date: "" };
+if (fs.existsSync(versionJsonPath)) {
+  try { info = JSON.parse(fs.readFileSync(versionJsonPath, "utf8")); } catch (e) { /* 壊れていたら作り直す */ }
+}
+let bumped = false;
+if (info.hash !== digest) {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, "0");
+  info = {
+    build: (Number(info.build) || 0) + 1,
+    hash: digest,
+    date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  };
+  fs.writeFileSync(versionJsonPath, JSON.stringify(info, null, 2) + "\n");
+  bumped = true;
+}
+
+fs.writeFileSync(path.join(root, VERSION_FILE),
+  "// このファイルは tools/build-sw.js の生成物。直接編集しないこと。\n" +
+  `var APP_VERSION = ${JSON.stringify({ build: info.build, date: info.date, hash: info.hash })};\n`);
+
+// 配信・キャッシュ対象には含める（画面に出すため）
+assets.push(VERSION_FILE);
+assets.sort();
 
 const source = `// このファイルは tools/build-sw.js の生成物。直接編集しないこと。
 const CACHE = ${JSON.stringify(`lang-practice-${version}`)};
@@ -106,3 +140,4 @@ self.addEventListener("message", function (event) {
 fs.writeFileSync(path.join(root, "sw.js"), source);
 console.log(`PWA assets: ${assets.length}`);
 console.log(`PWA cache version: ${version}`);
+console.log(`表示バージョン: ver.${info.build} (${info.date})${bumped ? "  ← 内容が変わったので採番を上げた" : "  ← 内容に変更なし"}`);
