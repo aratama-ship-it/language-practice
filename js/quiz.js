@@ -21,9 +21,11 @@ var Quiz = {
         { key: "second", label: "後半", qids: ids.slice(half) }
       ];
     }
+    // Vol側で halfLabels を持っていればそれを使う（Part 5・6 特訓など、文法/読解では実態に合わないVol用）
+    var labels = BANK.vols()[volId].halfLabels || {};
     return [
-      { key: "grammar", label: "文法", qids: p5 },
-      { key: "reading", label: "読解", qids: rest }
+      { key: "grammar", label: labels.grammar || "文法", qids: p5 },
+      { key: "reading", label: labels.reading || "読解", qids: rest }
     ];
   },
   createSession: function (opts) {

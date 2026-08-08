@@ -61,6 +61,23 @@ Web Push（サーバーから送る通知）は使っていません。iOSには
 - 依存なしの素の HTML/CSS/JS（ES modules 不使用）。
 - ロジックのテスト: `node tests/run-tests.js`
 
+### Vol（問題セット）を追加するとき
+
+触る場所は**4か所**。1つでも漏れるとテストが落ちるか、本番だけ問題が出ない。
+
+1. `js/data/volN.js` を作る
+2. `index.html` に `<script src="js/data/volN.js">` を1行足す
+3. `tests/run-tests.js` の `DATA_FILES` に追加する
+4. `tests/run-tests.js` の `EXPECTED.toeic` に `N: 問題数` を追加する
+
+**正解の位置は (A)〜(D) に散らすこと。** アプリは選択肢をシャッフルしないため、
+正解が偏っていると位置で当てられてしまい練習にならない。
+Vol.8 は 8問ずつの均等配分にしてある（`node -e` で `answer` の分布を数えて確認できる）。
+
+Part 5 のみのVolは10分版が「前半/後半」、Part 5 以外を含むVolは「文法/読解」に分かれる。
+実態に合わないときは Vol 定義に `halfLabels: { grammar: "...", reading: "..." }` を書けば
+ボタンの表記を差し替えられる（問題数は自動で後ろに付く）。
+
 ### PWAの更新手順（重要）
 
 `sw.js` は **生成物**。手で編集しないこと。配信ファイルを1つでも変えたら:
