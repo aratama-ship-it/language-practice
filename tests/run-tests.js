@@ -370,6 +370,41 @@ if (LISTEN) {
   }
 }
 
+// ---- reminder.js ----
+["js/reminder.js"].forEach(f => { if (fs.existsSync(path.join(root, f))) load(f); });
+const Reminder = ctx.Reminder;
+section("reminder-ics");
+assert(Reminder, "Reminder が定義されている");
+if (Reminder) {
+  const ics = Reminder.buildICS({
+    days: ["FR", "MO", "WE"], time: "20:30", duration: 15
+  }, {
+    now: new Date(2026, 7, 10, 10, 0, 0).getTime(), uid: "fixed-test-uid"
+  });
+  assert(ics.indexOf("BEGIN:VCALENDAR\r\n") === 0, "BEGIN:VCALENDAR で始まる");
+  assert(ics.trim().endsWith("END:VCALENDAR"), "END:VCALENDAR で終わる");
+  assert(ics.includes("RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR\r\n"), "BYDAY が月〜日の順序と記法になる");
+  assert(ics.includes("DTSTART:20260810T203000\r\n"), "DTSTART に指定時刻が入る");
+  assert(!/DTSTART:[^\r\n]*Z/.test(ics), "DTSTART は Z なしのフローティング時刻");
+  assert(ics.includes("DTEND:20260810T204500\r\n"), "DTEND は想定時間後になる");
+  assert(ics.includes("\r\n") && ics.replace(/\r\n/g, "").indexOf("\n") < 0, "改行はすべて CRLF");
+  assert(ics.includes("BEGIN:VALARM\r\nTRIGGER:PT0M\r\nACTION:DISPLAY\r\nDESCRIPTION:英仏練習の時間です\r\nEND:VALARM"),
+    "VALARM ブロックを含む");
+  assert(ics.includes("SUMMARY:英仏練習") && ics.includes("DESCRIPTION:TOEIC・フランス語の練習。"),
+    "日本語の SUMMARY と DESCRIPTION が壊れない");
+
+  section("reminder-streak");
+  assert(Reminder.streak(["2026-08-08", "2026-08-07", "2026-08-06"], "2026-08-08") === 3,
+    "今日やった連続日数");
+  assert(Reminder.streak(["2026-08-07", "2026-08-06", "2026-08-05"], "2026-08-08") === 3,
+    "今日未実施でも昨日までの連続を数える");
+  assert(Reminder.streak(["2026-08-06", "2026-08-05"], "2026-08-08") === 0,
+    "2日空いたら0日");
+  assert(Reminder.streak([], "2026-08-08") === 0, "空配列は0日");
+  assert(Reminder.streak(["2026-08-08", "2026-08-08", "2026-08-07"], "2026-08-08") === 2,
+    "重複日付を二重に数えない");
+}
+
 // ---- PWA ----
 section("pwa-manifest");
 let manifest = null;

@@ -44,3 +44,14 @@
     window.location.reload();
   });
 })();
+
+(function () {
+  "use strict";
+
+  var gestureEvents = ["gesturestart", "gesturechange", "gestureend"];
+  for (var i = 0; i < gestureEvents.length; i++) {
+    document.addEventListener(gestureEvents[i], function (event) {
+      event.preventDefault();
+    }, { passive: false });
+  }
+})();

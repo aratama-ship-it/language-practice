@@ -146,6 +146,7 @@ var App = {
       this.el("button", { text: "成績分析", onclick: function () { self.openAnalysis(); } }),
       this.el("button", { text: "ディクテーション練習", onclick: function () { DictationUI.open(BANK.activeId); } }),
       this.el("button", { text: "リスニング", onclick: function () { ListeningUI.open(BANK.activeId); } }),
+      this.el("button", { text: "学習リマインダー", onclick: function () { ReminderUI.open(); } }),
       this.el("button", { text: "データ書き出し", onclick: function () { self.exportData(); } }),
       this.el("button", { text: "データ読み込み", onclick: function () { importInput.click(); } }),
       importInput

@@ -13,6 +13,8 @@
 
 * { box-sizing: border-box; }
 
+html { touch-action: manipulation; -webkit-text-size-adjust: 100%; }
+
 body {
   margin: 0;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -90,6 +92,7 @@ button.primary:hover { background: #1d4ed8; }
 button:disabled { opacity: 0.4; cursor: default; }
 
 select, input[type="file"] { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); }
+input[type="text"], input[type="number"], textarea, select { font-size: 16px; }
 
 .subject-tabs { display: flex; gap: 8px; margin: 8px 0 4px; }
 .subject-tab { border-radius: 999px; padding: 6px 18px; }
@@ -186,12 +189,21 @@ table.history th { color: var(--sub); font-weight: 600; font-size: 13px; }
 #review-panel label { margin-right: 12px; }
 
 /* ディクテーション */
-.dict-blank { width: 7em; margin: 0 4px; padding: 4px 6px; }
+.dict-blank { width: 7em; margin: 0 4px; padding: 4px 6px; font-size: 16px; }
 .dict-blank-line, .dict-result-line { line-height: 2.2; font-size: 16px; margin: 12px 0; }
 .dict-word { white-space: pre; }
 .dict-close { color: #b26a00; }          /* 惜しい（アクサン/軽微な違い） */
 .score-line { font-size: 20px; font-weight: 700; margin: 8px 0; }
-#dict-sentence { width: 100%; font: inherit; padding: 10px; border-radius: 8px; border: 1px solid var(--line); }
+#dict-sentence { width: 100%; font: inherit; font-size: 16px; padding: 10px; border-radius: 8px; border: 1px solid var(--line); }
+
+/* 学習リマインダー */
+.reminder-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 8px 0 4px; }
+.reminder-days label {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 6px 0; font-size: 14px; color: var(--sub); cursor: pointer;
+}
+.reminder-days input { margin: 0; }
+.reminder-days input:checked + span { color: var(--ink); font-weight: 600; }
 
 /* リスニング */
 .lis-qblock { margin: 14px 0; }

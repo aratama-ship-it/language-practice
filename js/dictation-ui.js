@@ -8,6 +8,20 @@ var DictationUI = {
   answers: [],          // 各文の採点結果を貯める
   el: function () { return App.el.apply(App, arguments); },
 
+  _autofocusEnabled: function () {
+    try {
+      var saved = localStorage.getItem("dictation-autofocus");
+      if (saved === "1") return true;
+      if (saved === "0") return false;
+    } catch (e) {}
+    if (!window.matchMedia) return true;
+    return !window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  },
+  _saveAutofocus: function (enabled) {
+    try { localStorage.setItem("dictation-autofocus", enabled ? "1" : "0"); }
+    catch (e) {}
+  },
+
   // ---- 記録 ----
   _load: function (subjectId) {
     try {
@@ -68,6 +82,18 @@ var DictationUI = {
     });
     root.appendChild(tabs);
     root.appendChild(this.el("h1", { text: "ディクテーション" }));
+
+    var autofocus = this.el("input", { type: "checkbox" });
+    autofocus.checked = this._autofocusEnabled();
+    autofocus.addEventListener("change", function () {
+      self._saveAutofocus(autofocus.checked);
+    });
+    root.appendChild(this.el("div", { class: "card" }, [
+      this.el("div", { class: "row" }, [
+        this.el("label", null, [autofocus, " 入力欄に自動でカーソルを合わせる"]),
+        this.el("span", { class: "meta", text: "オフにすると、キーボードは自分でタップしたときだけ出ます" })
+      ])
+    ]));
 
     if (!window.speechSynthesis) {
       root.appendChild(this.el("p", { class: "subtitle",
@@ -203,7 +229,7 @@ var DictationUI = {
     var firstInput = this.mode === "blanks"
       ? inputArea.querySelector(".dict-blank")
       : document.getElementById("dict-sentence");
-    if (firstInput) firstInput.focus();
+    if (firstInput && this._autofocusEnabled()) firstInput.focus();
 
     // 自動で1回再生
     this.speak(item.text, false);

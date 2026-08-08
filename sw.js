@@ -1,5 +1,5 @@
 // このファイルは tools/build-sw.js の生成物。直接編集しないこと。
-const CACHE = "lang-practice-v-898cbc6bd2";
+const CACHE = "lang-practice-v-ba8716ef70";
 const ASSETS = [
   "css/style.css",
   "icons/apple-touch-icon.png",
@@ -32,14 +32,23 @@ const ASSETS = [
   "js/listening.js",
   "js/pwa.js",
   "js/quiz.js",
+  "js/reminder-ui.js",
+  "js/reminder.js",
   "js/storage.js",
   "js/subjects.js",
   "manifest.json"
 ];
 
 self.addEventListener("install", function (event) {
+  // cache:"reload" を付けないと、ブラウザのHTTPキャッシュにある古いファイルを
+  // そのままプリキャッシュしてしまい、更新したはずの内容が反映されない。
   event.waitUntil(caches.open(CACHE).then(function (cache) {
-    return cache.addAll(ASSETS);
+    return Promise.all(ASSETS.map(function (url) {
+      return fetch(new Request(url, { cache: "reload" })).then(function (response) {
+        if (!response.ok) throw new Error("precache failed: " + url);
+        return cache.put(url, response);
+      });
+    }));
   }));
 });
 

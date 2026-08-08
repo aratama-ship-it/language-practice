@@ -42,8 +42,15 @@ const CACHE = ${JSON.stringify(`lang-practice-${version}`)};
 const ASSETS = ${JSON.stringify(assets, null, 2)};
 
 self.addEventListener("install", function (event) {
+  // cache:"reload" を付けないと、ブラウザのHTTPキャッシュにある古いファイルを
+  // そのままプリキャッシュしてしまい、更新したはずの内容が反映されない。
   event.waitUntil(caches.open(CACHE).then(function (cache) {
-    return cache.addAll(ASSETS);
+    return Promise.all(ASSETS.map(function (url) {
+      return fetch(new Request(url, { cache: "reload" })).then(function (response) {
+        if (!response.ok) throw new Error("precache failed: " + url);
+        return cache.put(url, response);
+      });
+    }));
   }));
 });
 
