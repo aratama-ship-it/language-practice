@@ -22,24 +22,24 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q1", vol: 2, part: 5, passageId: null, number: 1,
       question: "— Où est mon téléphone ? — Il est ------- la table, à côté du livre.",
-      choices: ["sur", "dans", "en", "à"],
-      answer: 0,
+      choices: ["en", "à", "sur", "dans"],
+      answer: 2,
       explanation: "「テーブルの上に」＝表面の上は sur。sur la table。",
       category: "前置詞"
     },
     {
       id: "f2-q2", vol: 2, part: 5, passageId: null, number: 2,
       question: "Ils ------- fini leurs devoirs avant le dîner.",
-      choices: ["sont", "ont", "avons", "as"],
-      answer: 1,
+      choices: ["ont", "avons", "as", "sont"],
+      answer: 0,
       explanation: "複合過去。finir は助動詞 avoir をとる。主語 Ils → ont fini。",
       category: "動詞の活用"
     },
     {
       id: "f2-q3", vol: 2, part: 5, passageId: null, number: 3,
       question: "Cette histoire est ------- que l'autre.",
-      choices: ["plus intéressant", "plus intéressante", "la plus intéressante", "très intéressant"],
-      answer: 1,
+      choices: ["la plus intéressante", "très intéressant", "plus intéressant", "plus intéressante"],
+      answer: 3,
       explanation: "histoire は女性名詞。比較級 plus + 形容詞（女性形 intéressante）+ que。une histoire plus intéressante que l'autre。",
       category: "性数一致"
     },
@@ -62,8 +62,8 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q6", vol: 2, part: 5, passageId: null, number: 6,
       question: "Nous ------- levons à six heures tous les jours.",
-      choices: ["se", "nous", "vous", "me"],
-      answer: 1,
+      choices: ["vous", "me", "se", "nous"],
+      answer: 3,
       explanation: "代名動詞 se lever。主語 Nous に対応する再帰代名詞は nous。Nous nous levons。",
       category: "動詞の活用"
     },
@@ -78,16 +78,16 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q8", vol: 2, part: 5, passageId: null, number: 8,
       question: "------- est ton acteur préféré ?",
-      choices: ["Quel", "Quelle", "Quels", "Quelle est"],
-      answer: 0,
+      choices: ["Quels", "Quelle est", "Quel", "Quelle"],
+      answer: 2,
       explanation: "acteur は男性単数。疑問形容詞 quel は男性単数形 Quel。Quel est ton acteur préféré ?",
       category: "語彙・会話表現"
     },
     {
       id: "f2-q9", vol: 2, part: 5, passageId: null, number: 9,
       question: "Quand j'étais enfant, je ------- beaucoup de bonbons.",
-      choices: ["mange", "ai mangé", "mangeais", "mangerai"],
-      answer: 2,
+      choices: ["mangerai", "mange", "ai mangé", "mangeais"],
+      answer: 3,
       explanation: "Quand j'étais enfant（子どものころ）＝過去の習慣は半過去。manger の半過去一人称 mangeais。",
       category: "動詞の活用"
     },
@@ -102,16 +102,16 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q11", vol: 2, part: 5, passageId: null, number: 11,
       question: "Vous avez des enfants ? — Oui, j'------- ai deux.",
-      choices: ["y", "en", "les", "leur"],
-      answer: 1,
+      choices: ["leur", "y", "en", "les"],
+      answer: 2,
       explanation: "数量を受ける中性代名詞 en（des enfants の de を含む）。j'en ai deux =「（子どもが）2人います」。",
       category: "代名詞"
     },
     {
       id: "f2-q12", vol: 2, part: 5, passageId: null, number: 12,
       question: "Nous partons ------- vacances la semaine prochaine.",
-      choices: ["à", "en", "dans", "de"],
-      answer: 1,
+      choices: ["en", "dans", "de", "à"],
+      answer: 0,
       explanation: "partir en vacances =「バカンスに出かける」慣用表現。前置詞は en。",
       category: "前置詞"
     },
@@ -134,40 +134,40 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q15", vol: 2, part: 5, passageId: null, number: 15,
       question: "Je ne comprends pas ce mot. Tu peux ------- répéter ?",
-      choices: ["me le", "le me", "me la", "moi le"],
-      answer: 0,
+      choices: ["moi le", "me le", "le me", "me la"],
+      answer: 1,
       explanation: "二重目的語の語順：間接（me）→ 直接（le = ce mot 男性単数）。Tu peux me le répéter ?（不定詞の前に置く）",
       category: "代名詞"
     },
     {
       id: "f2-q16", vol: 2, part: 5, passageId: null, number: 16,
       question: "Le dimanche, nous ------- souvent au parc quand nous étions jeunes.",
-      choices: ["allons", "sommes allés", "allions", "irons"],
-      answer: 2,
+      choices: ["irons", "allons", "sommes allés", "allions"],
+      answer: 3,
       explanation: "quand nous étions jeunes（若かったころ）＝過去の習慣は半過去。aller の半過去 nous allions。",
       category: "動詞の活用"
     },
     {
       id: "f2-q17", vol: 2, part: 5, passageId: null, number: 17,
       question: "Cette valise est trop ------- . Je ne peux pas la porter.",
-      choices: ["lourd", "lourde", "lourds", "lourdes"],
-      answer: 1,
+      choices: ["lourdes", "lourd", "lourde", "lourds"],
+      answer: 2,
       explanation: "valise は女性単数。形容詞 lourd（重い）の女性単数形は lourde。",
       category: "性数一致"
     },
     {
       id: "f2-q18", vol: 2, part: 5, passageId: null, number: 18,
       question: "— Merci beaucoup pour ton aide ! — ------- .",
-      choices: ["De rien", "S'il te plaît", "Au revoir", "Pardon"],
-      answer: 0,
+      choices: ["S'il te plaît", "Au revoir", "Pardon", "De rien"],
+      answer: 3,
       explanation: "お礼への返答は De rien =「どういたしまして」。会話表現。",
       category: "語彙・会話表現"
     },
     {
       id: "f2-q19", vol: 2, part: 5, passageId: null, number: 19,
       question: "Je viens ------- finir mon travail. Je suis libre maintenant.",
-      choices: ["de", "à", "pour", "en"],
-      answer: 0,
+      choices: ["en", "de", "à", "pour"],
+      answer: 1,
       explanation: "近接過去 venir de + 不定詞 =「〜したばかり」。Je viens de finir =「終えたばかり」。",
       category: "動詞の活用"
     },
@@ -182,8 +182,8 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q21", vol: 2, part: 6, passageId: "f2-p1", number: 21,
       question: "---[Q21]--- に入るものを選んでください。",
-      choices: ["fermée", "fermé", "ferme", "fermés"],
-      answer: 0,
+      choices: ["fermés", "fermée", "fermé", "ferme"],
+      answer: 1,
       explanation: "受動的な状態 être + 過去分詞。主語 La bibliothèque（女性単数）に一致して fermée。sera fermée =「閉館される」。",
       category: "性数一致"
     },
@@ -198,32 +198,32 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q23", vol: 2, part: 6, passageId: "f2-p1", number: 23,
       question: "---[Q23]--- に入るものを選んでください。",
-      choices: ["jusqu'au", "depuis", "il y a", "pendant"],
-      answer: 0,
+      choices: ["depuis", "il y a", "pendant", "jusqu'au"],
+      answer: 3,
       explanation: "「8月15日まで返却できる」期限は jusqu'à。le 15 août の前で jusqu'au（jusqu'à + le）。",
       category: "前置詞"
     },
     {
       id: "f2-q24", vol: 2, part: 6, passageId: "f2-p1", number: 24,
       question: "---[Q24]--- に入るものを選んでください。",
-      choices: ["remercions", "remercie", "remercions de", "remercier"],
-      answer: 0,
+      choices: ["remercions de", "remercier", "remercions", "remercie"],
+      answer: 2,
       explanation: "主語 Nous に対応する remercier の現在は remercions。Nous vous remercions de votre compréhension =「ご理解に感謝します」定番表現。",
       category: "動詞の活用"
     },
     {
       id: "f2-q25", vol: 2, part: 7, passageId: "f2-p2", number: 25,
       question: "Pourquoi Marc écrit-il ce courriel ?",
-      choices: ["Pour réserver un voyage", "Pour annuler un voyage", "Pour remercier le service", "Pour changer d'adresse"],
-      answer: 1,
+      choices: ["Pour remercier le service", "Pour changer d'adresse", "Pour réserver un voyage", "Pour annuler un voyage"],
+      answer: 3,
       explanation: "本文：\"je dois annuler ce voyage parce que je suis malade\"（病気で旅行をキャンセルしなければならない）。件名も Réservation annulée。",
       category: "読解"
     },
     {
       id: "f2-q26", vol: 2, part: 7, passageId: "f2-p2", number: 26,
       question: "Quand Marc devait-il partir à Nice ?",
-      choices: ["Le 3 août", "Le 12 septembre", "En octobre", "Le vendredi"],
-      answer: 1,
+      choices: ["Le vendredi", "Le 3 août", "Le 12 septembre", "En octobre"],
+      answer: 2,
       explanation: "本文：\"un voyage pour Nice le 12 septembre\"（9月12日のニース旅行）。",
       category: "読解"
     },
@@ -238,16 +238,16 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q28", vol: 2, part: 7, passageId: "f2-p2", number: 28,
       question: "Avant quand Marc veut-il une réponse ?",
-      choices: ["Avant lundi", "Avant mercredi", "Avant vendredi", "Avant le 12 septembre"],
-      answer: 2,
+      choices: ["Avant mercredi", "Avant vendredi", "Avant le 12 septembre", "Avant lundi"],
+      answer: 1,
       explanation: "本文：\"Pouvez-vous me répondre avant vendredi ?\"（金曜までに返信を）。",
       category: "読解"
     },
     {
       id: "f2-q29", vol: 2, part: 7, passageId: "f2-p3", number: 29,
       question: "Depuis combien de temps le restaurant de Thomas est-il ouvert ?",
-      choices: ["Depuis six mois", "Depuis un an", "Depuis deux ans", "Depuis cinq ans"],
-      answer: 2,
+      choices: ["Depuis deux ans", "Depuis cinq ans", "Depuis six mois", "Depuis un an"],
+      answer: 0,
       explanation: "本文：\"Il a ouvert son restaurant il y a deux ans\"（2年前に開店）。",
       category: "読解"
     },
@@ -262,16 +262,16 @@ SUBJECTS.french.vols[2] = {
     {
       id: "f2-q31", vol: 2, part: 7, passageId: "f2-p3", number: 31,
       question: "D'après Thomas, qu'est-ce qui est le plus important ?",
-      choices: ["Le prix des plats", "La qualité des ingrédients", "La taille du restaurant", "Le nombre de clients"],
-      answer: 1,
+      choices: ["Le nombre de clients", "Le prix des plats", "La qualité des ingrédients", "La taille du restaurant"],
+      answer: 2,
       explanation: "本文：\"la qualité des ingrédients est le plus important\"（食材の質が一番大切）。",
       category: "読解"
     },
     {
       id: "f2-q32", vol: 2, part: 7, passageId: "f2-p3", number: 32,
       question: "Quel est le rêve de Thomas ?",
-      choices: ["Ouvrir un deuxième restaurant", "Déménager à Bordeaux", "Écrire un livre de cuisine", "Devenir célèbre"],
-      answer: 2,
+      choices: ["Devenir célèbre", "Ouvrir un deuxième restaurant", "Déménager à Bordeaux", "Écrire un livre de cuisine"],
+      answer: 3,
       explanation: "本文：\"Son rêve est d'écrire un livre de cuisine pour partager ses recettes\"（レシピを共有するために料理本を書くのが夢）。",
       category: "読解"
     }

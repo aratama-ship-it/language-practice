@@ -52,6 +52,23 @@ for (const subjId of Object.keys(EXPECTED)) {
   assert(BANK.allQuestions().length === expectedTotal,
     `${subjId} 合計${expectedTotal}問（実際: ${BANK.allQuestions().length}）`);
 
+  // ---- 正解位置の偏り ----
+  // アプリは選択肢をシャッフルしないため、正解位置が偏っていると内容を理解しなくても
+  // 位置で当てられてしまい練習にならない。均すには tools/rebalance-answers.js を使う。
+  // 例外: TOEIC Vol.1〜6 は市販教材の原本から起こしたセットで、選択肢の並びは原本どおり。
+  // 解説に「原本の【正解修正】により (B) が正しい」等、原本の記号を参照する注記があるため
+  // 並べ替えられない（偏りが残っていることを承知のうえで対象外にしている）。
+  const SKEW_EXEMPT = { toeic: [1, 2, 3, 4, 5, 6], french: [] };
+  section("answer-balance:" + subjId);
+  for (const [vol, v] of Object.entries(BANK.vols())) {
+    if (SKEW_EXEMPT[subjId].includes(Number(vol))) continue;
+    const dist = [0, 0, 0, 0];
+    v.questions.forEach(q => dist[q.answer]++);
+    const min = Math.min(...dist) / v.questions.length;
+    assert(min >= 0.15,
+      `${subjId} Vol.${vol}: 正解位置の偏りが許容内（分布 ${dist.join("/")}、最小 ${Math.round(min * 100)}% ≥ 15%）`);
+  }
+
   section("integrity:" + subjId);
   const re = new RegExp("^" + subj.idPrefix + "\\d+-q\\d+$");
   for (const q of BANK.allQuestions()) {
