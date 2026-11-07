@@ -2,6 +2,8 @@
   "use strict";
 
   if (location.protocol === "file:" || !("serviceWorker" in navigator)) return;
+  // iPhone アプリ版は中身をアプリに同梱しているので Service Worker を使わない（更新は TestFlight で配る）
+  if (typeof Native !== "undefined" && Native.available) return;
 
   window.addEventListener("load", function () {
     try {

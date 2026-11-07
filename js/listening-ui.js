@@ -72,6 +72,23 @@ var ListeningUI = {
     return map;
   },
   playPassage: function (passage, slow) {
+    if (Native.available) {
+      // アプリ版: 1行ずつ順に読み、話者ごとに別の声（同じ地域の声の中から）を使う。
+      // 再生し直したら前の再生の続きを止めるため、世代番号で古い連鎖を打ち切る
+      var self = this, speech = Native.speech, nlang = LISTEN[this.subjectId].lang;
+      var gen = this._playGen = (this._playGen || 0) + 1;
+      var order = [];
+      passage.lines.forEach(function (ln) { if (order.indexOf(ln.speaker) < 0) order.push(ln.speaker); });
+      var k = 0;
+      var step = function () {
+        if (gen !== self._playGen || k >= passage.lines.length) return null;
+        var ln = passage.lines[k++];
+        return speech.speak({ text: ln.text, lang: nlang, rate: slow ? 0.7 : 1.0, voiceIndex: order.indexOf(ln.speaker) })
+          .then(function (r) { if (!(r && r.cancelled)) return step(); });
+      };
+      speech.cancel().then(step).catch(function () {});
+      return;
+    }
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     var lang = LISTEN[this.subjectId].lang;

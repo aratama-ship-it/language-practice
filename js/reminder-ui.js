@@ -114,6 +114,11 @@ var ReminderUI = {
     ]);
     root.appendChild(settingsCard);
 
+    if (Native.available) {
+      this._renderNative(root, settingsCard, timeInput, durationSelect);
+      return;
+    }
+
     var addButton = this.el("button", { class: "primary", text: "カレンダーに追加" });
     var fallbackLink = this.el("a", { text: "うまくいかないときはこちら", download: "eibutsu-renshu.ics" });
     root.appendChild(this.el("div", { class: "toolbar" }, [addButton, fallbackLink]));
@@ -158,6 +163,56 @@ var ReminderUI = {
     for (var i = 0; i < controls.length; i++) controls[i].addEventListener("change", updateCalendar);
     addButton.addEventListener("click", function () { self.download(); });
     updateCalendar();
+  },
+
+  // アプリ版: 曜日・時刻を iPhone の通知として毎週くり返し登録する（アプリを開いていなくても届く）
+  _renderNative: function (root, settingsCard, timeInput, durationSelect) {
+    var self = this;
+    var status = this.el("p", { class: "subtitle", text: "通知の状態を確認しています…" });
+    var setButton = this.el("button", { class: "primary", text: "この曜日・時刻で通知する" });
+    var stopButton = this.el("button", { text: "通知をやめる" });
+    root.appendChild(this.el("div", { class: "toolbar" }, [setButton, stopButton]));
+    root.appendChild(status);
+    root.appendChild(this.el("p", { class: "subtitle" }, [
+      "iPhone の通知として、選んだ曜日の同じ時刻に毎週届きます。アプリを開いていなくても届きます。",
+      this.el("br"),
+      "初めて設定するときは、通知を許可するかどうかを聞かれます。"
+    ]));
+    root.appendChild(this.el("div", { class: "toolbar" }, [
+      this.el("button", { text: "ホームへ", onclick: function () { App.goHome(); } })
+    ]));
+
+    function readSettings() {
+      var selected = [];
+      var checks = root.querySelectorAll("[data-reminder-day]");
+      for (var i = 0; i < checks.length; i++) if (checks[i].checked) selected.push(checks[i].value);
+      return { days: Reminder._orderedDays(selected), time: timeInput.value, duration: Number(durationSelect.value) };
+    }
+    function show(text) { status.textContent = text; }
+    function refresh() {
+      Native.reminder.status().then(function (r) {
+        if (r.permission === "denied") show("通知が許可されていません。設定アプリ →「通知」→「英仏練習」で許可してください。");
+        else show(r.scheduled > 0 ? "通知を設定済みです（週 " + r.scheduled + " 回）。" : "通知はまだ設定されていません。");
+      }).catch(function () { show(""); });
+    }
+    var controls = settingsCard.querySelectorAll("input, select");
+    for (var i = 0; i < controls.length; i++) controls[i].addEventListener("change", function () {
+      var s = readSettings(); self._saveSettings(s); setButton.disabled = s.days.length === 0;
+    });
+    setButton.addEventListener("click", function () {
+      var s = readSettings();
+      var m = String(s.time).match(/^(\d{2}):(\d{2})$/);
+      if (!m || s.days.length === 0) return;
+      self._saveSettings(s);
+      Native.reminder.schedule({ days: s.days, hour: Number(m[1]), minute: Number(m[2]),
+        title: "練習の時間です", body: s.duration + "分だけ練習しましょう" })
+        .then(refresh).catch(function (e) { show((e && e.message) || "通知を設定できませんでした。"); });
+    });
+    stopButton.addEventListener("click", function () {
+      Native.reminder.cancel().then(refresh).catch(function () {});
+    });
+    setButton.disabled = readSettings().days.length === 0;
+    refresh();
   },
 
   download: function () {

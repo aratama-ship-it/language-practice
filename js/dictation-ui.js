@@ -50,6 +50,14 @@ var DictationUI = {
     return (good[0] || cands[0] || null);
   },
   speak: function (text, slow) {
+    if (Native.available) {
+      // アプリ版: iPhone の音声合成で、地域まで一致する声（中国語は台湾）を使う
+      var speech = Native.speech, lang = DICT[this.subjectId].lang;
+      speech.cancel().then(function () {
+        return speech.speak({ text: Dictation.plain(text), lang: lang, rate: slow ? 0.6 : 1.0 });
+      }).catch(function () {});
+      return;
+    }
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(Dictation.plain(text));
@@ -98,7 +106,9 @@ var DictationUI = {
       ])
     ]));
 
-    if (!window.speechSynthesis) {
+    if (Native.available) {
+      // アプリ版は iPhone の音声合成を使うので、ブラウザの音声の読み込み待ちは要らない
+    } else if (!window.speechSynthesis) {
       root.appendChild(this.el("p", { class: "subtitle",
         text: "⚠ この環境では音声が使えません。答えを見る機能は使えます。" }));
     } else if (window.speechSynthesis.getVoices().length === 0) {
