@@ -12,6 +12,11 @@ var DICT = {
       "é/è/e の綴り", "男性形・女性形の音差", "文全体の聞き取り"],
     sets: {}
   },
+  chinese: {
+    id: "chinese", label: "中国語（台湾華語）", lang: "zh-TW", voiceRegion: true, storageKey: "chinese-dictation-data",
+    categories: ["数字・時刻", "声調", "似た音（zh/z・q/x など）", "量詞・助詞", "よく使う語", "文全体の聞き取り"],
+    sets: {}
+  },
   ids: function () { var o = []; for (var k in this) if (this[k] && this[k].sets) o.push(k); return o; },
   allItems: function (subjectId) {
     var subj = this[subjectId];

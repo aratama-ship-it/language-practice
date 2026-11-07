@@ -314,6 +314,26 @@ if (Dict) {
 const DICT = ctx.DICT;
 section("dictation-data");
 assert(DICT, "DICT が定義されている");
+// ---- 漢字（中国語）の採点。英仏の採点結果は変えない ----
+section("dictation-han");
+if (Dict) {
+  assert(Dict.normalize("Café !") === "cafe", "英仏の正規化は従来どおり");
+  assert(Dict.normalize("我們，好！") === "我們好", "漢字は残り、句読点は消える");
+  assert(Dict.plain("我 想 喝 咖啡 。") === "我想喝咖啡。", "表示・読み上げ用に語の間の空白を詰める");
+  assert(Dict.plain("Il y a trois enfants.") === "Il y a trois enfants.", "英仏の文は空白を詰めない");
+  assert(Dict.sep("咖啡") === "" && Dict.sep("café") === " ", "語のつなぎは漢字なら空白なし");
+  assert(Dict.wordMatch("咖啡", "咖啡") === "exact", "漢字の完全一致");
+  assert(Dict.wordMatch("咖啡", "咖非") === "wrong", "漢字は1字違いを正解にしない");
+  assert(Dict.wordMatch("bonjour", "bonjur") === "close", "英仏の軽いタイプミスは従来どおり許す");
+  const gb = Dict.gradeBlanks({ text: "我 想 喝 咖啡 。", blanks: [2, 3] }, { 2: "喝", 3: "咖啡" });
+  assert(gb.correct === 2 && gb.rate === 1, "中国語の空欄（語単位）を採点できる");
+  const gs = Dict.gradeSentence("我 想 喝 咖啡 。", "我想喝咖非");
+  assert(gs.targetTokens.length === 5, "中国語の全文入力は1文字ずつ採点する（5字）");
+  assert(Math.abs(gs.score - 0.8) < 1e-9 && gs.missedWords[0] === "啡", "1字違いだけが取りこぼしになる");
+  const gsFr = Dict.gradeSentence("Il y a trois enfants.", "il y a trois enfant");
+  assert(gsFr.targetTokens.length === 5 && gsFr.score === 1, "英仏の全文採点は語単位のまま");
+}
+
 const DICT_EXPECT = { toeic: 20, french: 20 };
 if (DICT && Dict) {
   for (const subjId of Object.keys(DICT_EXPECT)) {

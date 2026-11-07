@@ -63,6 +63,11 @@ var ListeningUI = {
     var base = lang.slice(0, 2);
     var cands = voices.filter(function (v) { return v.lang && v.lang.slice(0, 2) === base && !bad.test(v.name); });
     if (cands.length === 0) cands = voices.filter(function (v) { return v.lang && v.lang.slice(0, 2) === base; });
+    // 地域まで合わせる教科（中国語＝台湾の zh-TW）は、同じ地域の声だけを使う（無ければ同じ言語の声）
+    if (LISTEN[this.subjectId] && LISTEN[this.subjectId].voiceRegion) {
+      var same = cands.filter(function (v) { return App.sameRegion(v.lang, lang); });
+      if (same.length) cands = same;
+    }
     speakers.forEach(function (sp, i) { map[sp] = cands.length ? cands[i % cands.length] : null; });
     return map;
   },
@@ -209,6 +214,7 @@ var ListeningUI = {
     p.lines.forEach(function (ln) {
       var who = ln.speaker && ln.speaker !== "N" ? ln.speaker + ": " : "";
       script.appendChild(self.el("div", { text: who + ln.text }));
+      if (ln.pinyin) script.appendChild(self.el("div", { class: "subtitle", text: ln.pinyin }));
     });
     script.appendChild(this.el("div", { class: "subtitle", text: "訳: " + p.translation }));
     fb.appendChild(script);

@@ -10,6 +10,11 @@ var LISTEN = {
     categories: ["応答選択", "目的・概要", "詳細", "言い換え・推測", "次の行動・依頼", "話し手・場面"],
     sets: {}
   },
+  chinese: {
+    id: "chinese", label: "中国語（台湾華語）", lang: "zh-TW", voiceRegion: true, storageKey: "chinese-listening-data",
+    categories: ["応答選択", "目的・概要", "詳細", "言い換え・推測", "次の行動・依頼", "話し手・場面"],
+    sets: {}
+  },
   ids: function () { var o = []; for (var k in this) if (this[k] && this[k].sets) o.push(k); return o; },
   passages: function (subjectId) {
     var subj = this[subjectId], out = [];

@@ -44,13 +44,15 @@ var DictationUI = {
     var bad = /Bad News|Bahh|Boing|Bubbles|Cellos|Trinoids|Zarvox|Wobble|Whisper|Organ|Jester|Superstar|Good News|Pipe|Albert/i;
     var base = lang.slice(0, 2);
     var cands = voices.filter(function (v) { return v.lang && v.lang.slice(0, 2) === base; });
+    // 地域まで合わせる教科（中国語＝台湾の zh-TW）は、同じ地域の声を先にする
+    if (DICT[this.subjectId] && DICT[this.subjectId].voiceRegion) cands = App.preferRegion(cands, lang);
     var good = cands.filter(function (v) { return !bad.test(v.name); });
     return (good[0] || cands[0] || null);
   },
   speak: function (text, slow) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(text);
+    var u = new SpeechSynthesisUtterance(Dictation.plain(text));
     u.lang = DICT[this.subjectId].lang;
     var v = this._pickVoice(u.lang);
     if (v) u.voice = v;
@@ -209,7 +211,7 @@ var DictationUI = {
         if (item.blanks.indexOf(i) >= 0) {
           line.appendChild(self.el("input", { type: "text", class: "dict-blank", "data-idx": i, autocomplete: "off" }));
         } else {
-          line.appendChild(self.el("span", { class: "dict-word", text: w + " " }));
+          line.appendChild(self.el("span", { class: "dict-word", text: w + Dictation.sep(w) }));
         }
       });
       inputArea.appendChild(line);
@@ -247,7 +249,8 @@ var DictationUI = {
     var fb = document.getElementById("dict-feedback");
     App.clear(fb);
     fb.appendChild(this.el("div", { class: "explanation" }, [
-      this.el("div", { text: item.text }),
+      this.el("div", { text: Dictation.plain(item.text) }),
+      item.pinyin ? this.el("div", { class: "subtitle", text: item.pinyin }) : null,
       this.el("div", { class: "subtitle", text: item.translation })
     ]));
   },
@@ -276,7 +279,7 @@ var DictationUI = {
     if (this.mode === "sentence") {
       graded.targetTokens.forEach(function (t) {
         var cls = t.status === "exact" ? "correct" : (t.status === "close" ? "dict-close" : "wrong");
-        line.appendChild(self.el("span", { class: "dict-word " + cls, text: t.text + " " }));
+        line.appendChild(self.el("span", { class: "dict-word " + cls, text: t.text + Dictation.sep(t.text) }));
       });
     } else {
       var words = Dictation.tokenize(item.text);
@@ -285,12 +288,13 @@ var DictationUI = {
       words.forEach(function (w, i) {
         var cls = "dict-word";
         if (byIdx.hasOwnProperty(i)) cls += byIdx[i] === "exact" ? " correct" : (byIdx[i] === "close" ? " dict-close" : " wrong");
-        line.appendChild(self.el("span", { class: cls, text: w + " " }));
+        line.appendChild(self.el("span", { class: cls, text: w + Dictation.sep(w) }));
       });
     }
     fb.appendChild(line);
     fb.appendChild(this.el("div", { class: "score-line " + (correct ? "correct" : "wrong"),
       text: (correct ? "○ " : "× ") + Math.round(rate * 100) + "%" }));
+    if (item.pinyin) fb.appendChild(this.el("div", { class: "subtitle", text: item.pinyin }));
     fb.appendChild(this.el("div", { class: "subtitle", text: "訳: " + item.translation }));
 
     // フッターを「次へ」に差し替え

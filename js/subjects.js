@@ -19,5 +19,16 @@ var SUBJECTS = {
       "前置詞", "語彙・会話表現", "読解"],
     sectionLabels: { 5: "第1部 文法・語彙", 6: "第2部 穴埋め", 7: "第3部 読解" },
     vols: {}
+  },
+  // 中国語は台湾華語（繁体字・zh-TW の声）。2026-11-07 追加
+  chinese: {
+    id: "chinese",
+    label: "中国語",
+    storageKey: "chinese-app-data",
+    idPrefix: "c",
+    categories: ["量詞", "語順・文型", "助詞（了・過・著・的）", "副詞・接続詞",
+      "疑問・否定", "語彙・会話表現", "読解"],
+    sectionLabels: { 5: "第1部 文法・語彙", 6: "第2部 穴埋め", 7: "第3部 読解" },
+    vols: {}
   }
 };

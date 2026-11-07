@@ -1,5 +1,5 @@
 // このファイルは tools/build-sw.js の生成物。直接編集しないこと。
-const CACHE = "lang-practice-v-d37433a81a";
+const CACHE = "lang-practice-v-074fc24823";
 const ASSETS = [
   "css/style.css",
   "icons/apple-touch-icon.png",

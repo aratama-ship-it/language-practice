@@ -8,6 +8,17 @@ var App = {
   currentIndex: 0,
 
   // ---------- DOM ヘルパー ----------
+  // 言語コードの地域まで一致するか（"zh-TW" と "zh_TW" を同じとみなす）
+  sameRegion: function (a, b) {
+    return String(a).replace("_", "-").toLowerCase() === String(b).replace("_", "-").toLowerCase();
+  },
+  preferRegion: function (voices, lang) {
+    var self = this;
+    var same = voices.filter(function (v) { return self.sameRegion(v.lang, lang); });
+    var rest = voices.filter(function (v) { return !self.sameRegion(v.lang, lang); });
+    return same.concat(rest);
+  },
+
   el: function (tag, attrs, children) {
     var node = document.createElement(tag);
     if (attrs) {
@@ -559,10 +570,13 @@ var App = {
     return nodes;
   },
 
-  // 訳ブロック。fr は空欄を埋めた正解文（設問そのものが完全な文のときは無い）
+  // 訳ブロック。fr（フランス語）/ full（他の言語）は空欄を埋めた正解文（設問そのものが完全な文のときは無い）。
+  // py は読み（中国語のピンイン）
   buildTranslation: function (tr) {
-    var rows = [this.el("div", { class: "tr-heading", text: tr.fr ? "正解文と訳" : "設問の訳" })];
-    if (tr.fr) rows.push(this.el("div", { class: "tr-fr", text: tr.fr }));
+    var full = tr.full || tr.fr;
+    var rows = [this.el("div", { class: "tr-heading", text: full ? "正解文と訳" : "設問の訳" })];
+    if (full) rows.push(this.el("div", { class: "tr-fr", text: full }));
+    if (tr.py) rows.push(this.el("div", { class: "tr-py", text: tr.py }));
     rows.push(this.el("div", { class: "tr-row" }, [this.el("span", { class: "tr-tag", text: "日本語" }), tr.ja]));
     rows.push(this.el("div", { class: "tr-row" }, [this.el("span", { class: "tr-tag", text: "English" }), tr.en]));
     return this.el("div", { class: "translation" }, rows);

@@ -1,9 +1,23 @@
 // ディクテーションの採点・差分・集計（純粋関数）
 var Dictation = {
+  // 漢字（中国語）は残す。英仏の文には漢字が無いので、従来どおり a-z と数字だけが残る
   normalize: function (s) {
     return String(s).toLowerCase().normalize("NFD")
       .replace(/[̀-ͯ]/g, "")
-      .replace(/[^0-9a-z]/g, "");
+      .replace(/[^0-9a-z\u3400-\u9fff\uf900-\ufaff]/g, "");
+  },
+  hasHan: function (s) { return /[\u3400-\u9fff\uf900-\ufaff]/.test(String(s)); },
+  // 中国語のデータは空欄の単位を示すため語の間を空白で区切って持つ。表示・読み上げでは空白を詰める
+  plain: function (s) {
+    return String(s).replace(/([\u3400-\u9fff\uf900-\ufaff，。！？、：；「」]) +(?=[\u3400-\u9fff\uf900-\ufaff，。！？、：；「」])/g, "$1");
+  },
+  sep: function (s) { return this.hasHan(s) ? "" : " "; },
+  // 全文入力の採点単位。漢字を含む文は1文字ずつ（語の区切りを打たないため）、それ以外は空白区切りの語
+  sentenceTokens: function (s) {
+    if (!this.hasHan(s)) return this.tokenize(s);
+    var self = this;
+    return (String(s).match(/[\u3400-\u9fff\uf900-\ufaff]|[0-9A-Za-z]+/g) || [])
+      .filter(function (t) { return self.normalize(t).length > 0; });
   },
   levenshtein: function (a, b) {
     var m = a.length, n = b.length;
@@ -25,6 +39,7 @@ var Dictation = {
     var nt = this.normalize(target), np = this.normalize(typed);
     if (nt === np) return (String(target) === String(typed)) ? "exact" : "close";
     if (nt.length === 0) return "wrong";
+    if (this.hasHan(nt)) return "wrong"; // 漢字は1字違いで意味が変わるので、ゆるい一致を認めない
     var tol = nt.length <= 4 ? 1 : 2;
     return this.levenshtein(nt, np) <= tol ? "close" : "wrong";
   },
@@ -50,7 +65,7 @@ var Dictation = {
   // 正規化トークンで LCS を取り、正解語ごとに exact/close/missed を割り当てる
   gradeSentence: function (targetText, typedText) {
     var self = this;
-    var T = this.tokenize(targetText), P = this.tokenize(typedText);
+    var T = this.sentenceTokens(targetText), P = this.sentenceTokens(typedText);
     var m = T.length, n = P.length, i, j;
     var dp = [];
     for (i = 0; i <= m; i++) { dp[i] = []; for (j = 0; j <= n; j++) dp[i][j] = 0; }

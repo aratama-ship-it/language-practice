@@ -191,6 +191,7 @@ input[type="text"], input[type="number"], textarea, select { font-size: 16px; }
 }
 .translation .tr-heading { font-size: 12px; font-weight: 700; color: var(--sub); margin-bottom: 4px; }
 .translation .tr-fr { font-weight: 600; margin-bottom: 6px; }
+.translation .tr-py { color: var(--sub); font-size: 13px; margin: -4px 0 6px; }
 .translation .tr-row { margin: 2px 0; }
 .tr-tag {
   display: inline-block; min-width: 4.6em; font-size: 11px; color: var(--sub);
