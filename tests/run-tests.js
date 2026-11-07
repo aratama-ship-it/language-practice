@@ -22,7 +22,8 @@ const DATA_FILES = ["js/subjects.js", "js/data/bank.js",
   "js/data/vol5.js", "js/data/vol6.js", "js/data/vol7.js", "js/data/vol8.js",
   "js/data/french/vol1.js", "js/data/french/vol2.js",
   "js/data/french/vol3.js", "js/data/french/vol4.js", "js/data/french/vol5.js",
-  "js/data/french/vol6.js", "js/data/french/vol7.js", "js/data/french/vol8.js"];
+  "js/data/french/vol6.js", "js/data/french/vol7.js", "js/data/french/vol8.js",
+  "js/data/chinese/vol1.js", "js/data/chinese/vol2.js"];
 DATA_FILES.forEach(f => {
   if (fs.existsSync(path.join(root, f))) load(f);
 });
@@ -35,7 +36,8 @@ assert(BANK, "BANK が定義されている");
 // 教科ごとの期待問題数（フランス語は Task 6/7 で追加）
 const EXPECTED = {
   toeic: { 1: 32, 2: 32, 3: 32, 4: 30, 5: 32, 6: 32, 7: 32, 8: 32 },
-  french: { 1: 32, 2: 32, 3: 32, 4: 32, 5: 32, 6: 32, 7: 32, 8: 32 }
+  french: { 1: 32, 2: 32, 3: 32, 4: 32, 5: 32, 6: 32, 7: 32, 8: 32 },
+  chinese: { 1: 32, 2: 32 }
 };
 
 for (const subjId of Object.keys(EXPECTED)) {
@@ -60,7 +62,7 @@ for (const subjId of Object.keys(EXPECTED)) {
   // 例外: TOEIC Vol.1〜6 は市販教材の原本から起こしたセットで、選択肢の並びは原本どおり。
   // 解説に「原本の【正解修正】により (B) が正しい」等、原本の記号を参照する注記があるため
   // 並べ替えられない（偏りが残っていることを承知のうえで対象外にしている）。
-  const SKEW_EXEMPT = { toeic: [1, 2, 3, 4, 5, 6], french: [] };
+  const SKEW_EXEMPT = { toeic: [1, 2, 3, 4, 5, 6], french: [], chinese: [] };
   section("answer-balance:" + subjId);
   for (const [vol, v] of Object.entries(BANK.vols())) {
     if (SKEW_EXEMPT[subjId].includes(Number(vol))) continue;
@@ -108,6 +110,28 @@ for (const q of BANK.allQuestions()) {
 for (const v of Object.values(BANK.vols())) {
   v.passages.forEach(p => assert(p.translation && p.translation.ja && p.translation.en,
     `${p.id}: 本文の日本語訳・英語訳がある`));
+}
+
+// ---- 中国語の訳と読み ----
+// part5/6 は正解文 full とピンイン py を持ち、正解の選択肢を含む。part7 は設問の読み・訳＋全選択肢の訳。本文は ja/en/py。
+BANK.setActive("chinese");
+section("translation:chinese");
+for (const q of BANK.allQuestions()) {
+  const tr = q.translation;
+  assert(tr && tr.ja && tr.en && tr.py, `${q.id}: 日本語訳・英語訳・ピンインがある`);
+  if (!tr) continue;
+  assert(!/[a-z]/i.test(q.question.replace(/---\[Q\d+\]---/, "")) || q.part === 6, `${q.id}: 問題文に英字が混じっていない`);
+  if (q.part === 7) {
+    const ct = q.choiceTranslations || {};
+    q.choices.forEach(c => assert(ct[c] && ct[c].ja && ct[c].en, `${q.id}: 選択肢「${c}」の訳がある`));
+  } else {
+    assert(tr.full && tr.full.includes(q.choices[q.answer]), `${q.id}: 正解文に正解「${q.choices[q.answer]}」が入っている`);
+    if (q.part === 5) assert(tr.full === q.question.replace("＿＿＿", q.choices[q.answer]), `${q.id}: 空欄に正解を入れると正解文と一致する`);
+  }
+}
+for (const v of Object.values(BANK.vols())) {
+  v.passages.forEach(p => assert(p.translation && p.translation.ja && p.translation.en && p.translation.py,
+    `${p.id}: 本文の訳と読みがある`));
 }
 
 BANK.setActive("toeic");
@@ -309,7 +333,7 @@ if (Dict) {
 }
 
 // ---- dictation data ----
-["js/data/dictation/index.js", "js/data/dictation/en.js", "js/data/dictation/fr.js"]
+["js/data/dictation/index.js", "js/data/dictation/en.js", "js/data/dictation/fr.js", "js/data/dictation/zh.js"]
   .forEach(f => { if (fs.existsSync(path.join(root, f))) load(f); });
 const DICT = ctx.DICT;
 section("dictation-data");
@@ -334,7 +358,7 @@ if (Dict) {
   assert(gsFr.targetTokens.length === 5 && gsFr.score === 1, "英仏の全文採点は語単位のまま");
 }
 
-const DICT_EXPECT = { toeic: 20, french: 20 };
+const DICT_EXPECT = { toeic: 20, french: 20, chinese: 20 };
 if (DICT && Dict) {
   for (const subjId of Object.keys(DICT_EXPECT)) {
     const subj = DICT[subjId];
@@ -401,12 +425,12 @@ if (Lis) {
 }
 
 // ---- listening data ----
-["js/data/listening/index.js", "js/data/listening/en.js", "js/data/listening/fr.js"]
+["js/data/listening/index.js", "js/data/listening/en.js", "js/data/listening/fr.js", "js/data/listening/zh.js"]
   .forEach(f => { if (fs.existsSync(path.join(root, f))) load(f); });
 const LISTEN = ctx.LISTEN;
 section("listening-data");
 assert(LISTEN, "LISTEN が定義されている");
-const LIS_EXPECT = { toeic: 18, french: 18 };
+const LIS_EXPECT = { toeic: 18, french: 18, chinese: 18 };
 const LIS_CATS = ["応答選択", "目的・概要", "詳細", "言い換え・推測", "次の行動・依頼", "話し手・場面"];
 if (LISTEN) {
   for (const subjId of Object.keys(LIS_EXPECT)) {

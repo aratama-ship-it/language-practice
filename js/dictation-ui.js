@@ -68,6 +68,7 @@ var DictationUI = {
   },
   renderSetList: function () {
     var self = this;
+    this.view = "list";
     var root = document.getElementById("screen-dictation");
     App.clear(root);
     var subj = DICT[this.subjectId];
@@ -105,7 +106,8 @@ var DictationUI = {
       var self2 = this;
       window.speechSynthesis.onvoiceschanged = function () {
         window.speechSynthesis.onvoiceschanged = null;
-        if (!document.getElementById("screen-dictation").classList.contains("hidden")) self2.renderSetList();
+        // 一覧を表示しているときだけ描き直す（もう文を解き始めていたら一覧に戻さない）
+        if (self2.view === "list" && !document.getElementById("screen-dictation").classList.contains("hidden")) self2.renderSetList();
       };
     }
 
@@ -189,6 +191,7 @@ var DictationUI = {
   },
   renderItem: function () {
     var self = this;
+    this.view = "item";
     var root = document.getElementById("screen-dictation");
     App.clear(root);
     var item = this.items[this.index];

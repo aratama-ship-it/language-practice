@@ -534,11 +534,13 @@ var App = {
       var pt = BANK.getPassage(q.passageId).translation;
       if (pt) {
         nodes.push(this.el("details", { class: "passage-translation" }, [
-          this.el("summary", { text: "本文の訳（日本語・English）" }),
+          this.el("summary", { text: pt.py ? "本文の訳と読み（日本語・English・ピンイン）" : "本文の訳（日本語・English）" }),
           this.el("div", { class: "tr-label", text: "日本語訳" }),
           this.el("div", { class: "tr-body", text: pt.ja }),
           this.el("div", { class: "tr-label", text: "English" }),
-          this.el("div", { class: "tr-body", text: pt.en })
+          this.el("div", { class: "tr-body", text: pt.en }),
+          pt.py ? this.el("div", { class: "tr-label", text: "読み（ピンイン）" }) : null,
+          pt.py ? this.el("div", { class: "tr-body", text: pt.py }) : null
         ]));
       }
     }
