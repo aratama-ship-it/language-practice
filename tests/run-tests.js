@@ -83,6 +83,31 @@ for (const subjId of Object.keys(EXPECTED)) {
     assert(BANK.getQuestion(q.id) === q, `${q.id}: getQuestion で引ける`);
   }
 }
+// ---- フランス語の訳（結果詳細で表示する日本語訳・英語訳） ----
+// part5/6 は空欄を埋めた正解文 fr を持ち、正解の選択肢を含む。part7 は設問の訳＋全選択肢の訳。
+// choiceTranslations は選択肢の文字列をキーにする（rebalance-answers.js で並べ替えても対応が崩れない）。
+BANK.setActive("french");
+section("translation:french");
+for (const q of BANK.allQuestions()) {
+  const tr = q.translation;
+  assert(tr && tr.ja && tr.en, `${q.id}: 日本語訳・英語訳がある`);
+  if (!tr) continue;
+  if (q.part === 7) {
+    assert(!tr.fr, `${q.id}: part7 は正解文 fr を持たない`);
+    const ct = q.choiceTranslations || {};
+    q.choices.forEach(c => assert(ct[c] && ct[c].ja && ct[c].en, `${q.id}: 選択肢「${c}」の訳がある`));
+    Object.keys(ct).forEach(k => assert(q.choices.includes(k), `${q.id}: 訳のキー「${k}」が選択肢にある`));
+  } else {
+    assert(tr.fr, `${q.id}: 正解文 fr がある`);
+    if (tr.fr) assert(tr.fr.toLowerCase().includes(q.choices[q.answer].toLowerCase()),
+      `${q.id}: 正解文に正解「${q.choices[q.answer]}」が入っている`);
+  }
+}
+for (const v of Object.values(BANK.vols())) {
+  v.passages.forEach(p => assert(p.translation && p.translation.ja && p.translation.en,
+    `${p.id}: 本文の日本語訳・英語訳がある`));
+}
+
 BANK.setActive("toeic");
 const D = BANK; // 以降のロジックテストは toeic をアクティブにして BANK 経由で行う
 

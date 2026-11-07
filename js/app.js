@@ -518,13 +518,26 @@ var App = {
 
   buildQuestionDetail: function (q, chosen) {
     var nodes = [];
-    if (q.passageId) nodes.push(this.buildPassage(q.passageId));
+    if (q.passageId) {
+      nodes.push(this.buildPassage(q.passageId));
+      var pt = BANK.getPassage(q.passageId).translation;
+      if (pt) {
+        nodes.push(this.el("details", { class: "passage-translation" }, [
+          this.el("summary", { text: "本文の訳（日本語・English）" }),
+          this.el("div", { class: "tr-label", text: "日本語訳" }),
+          this.el("div", { class: "tr-body", text: pt.ja }),
+          this.el("div", { class: "tr-label", text: "English" }),
+          this.el("div", { class: "tr-body", text: pt.en })
+        ]));
+      }
+    }
     nodes.push(this.el("div", { class: "question-text", text: q.question }));
 
     var labels = ["A", "B", "C", "D"];
     for (var c = 0; c < 4; c++) {
       var cls = "result-choice";
       var children = ["(" + labels[c] + ") " + q.choices[c]];
+      var ct = q.choiceTranslations && q.choiceTranslations[q.choices[c]];
       if (c === q.answer) {
         cls += " is-answer";
         children.push(this.el("span", { class: "badge badge-ok", text: "正解" }));
@@ -536,12 +549,23 @@ var App = {
       if (c === chosen && c === q.answer) {
         children.push(this.el("span", { class: "badge badge-ok", text: "あなたの解答" }));
       }
+      if (ct) children.push(this.el("div", { class: "choice-tr", text: ct.ja + " ／ " + ct.en }));
       nodes.push(this.el("div", { class: cls }, children));
     }
     if (chosen === null) nodes.push(this.el("p", { class: "subtitle", text: "この問題は未回答でした" }));
+    if (q.translation) nodes.push(this.buildTranslation(q.translation));
     nodes.push(this.el("div", { class: "explanation", text: q.explanation }));
     nodes.push(this.el("div", { class: "subtitle", text: "カテゴリ: " + q.category }));
     return nodes;
+  },
+
+  // 訳ブロック。fr は空欄を埋めた正解文（設問そのものが完全な文のときは無い）
+  buildTranslation: function (tr) {
+    var rows = [this.el("div", { class: "tr-heading", text: tr.fr ? "正解文と訳" : "設問の訳" })];
+    if (tr.fr) rows.push(this.el("div", { class: "tr-fr", text: tr.fr }));
+    rows.push(this.el("div", { class: "tr-row" }, [this.el("span", { class: "tr-tag", text: "日本語" }), tr.ja]));
+    rows.push(this.el("div", { class: "tr-row" }, [this.el("span", { class: "tr-tag", text: "English" }), tr.en]));
+    return this.el("div", { class: "translation" }, rows);
   },
 
   retry: function () {

@@ -184,6 +184,24 @@ input[type="text"], input[type="number"], textarea, select { font-size: 16px; }
   font-size: 14px; margin-top: 10px; white-space: pre-wrap;
 }
 
+/* 訳（フランス語の結果詳細） */
+.translation {
+  border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+  font-size: 14px; margin-top: 10px;
+}
+.translation .tr-heading { font-size: 12px; font-weight: 700; color: var(--sub); margin-bottom: 4px; }
+.translation .tr-fr { font-weight: 600; margin-bottom: 6px; }
+.translation .tr-row { margin: 2px 0; }
+.tr-tag {
+  display: inline-block; min-width: 4.6em; font-size: 11px; color: var(--sub);
+  border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; margin-right: 8px; text-align: center;
+}
+.choice-tr { font-size: 12px; color: var(--sub); margin-top: 2px; }
+.passage-translation { margin: -4px 0 10px; font-size: 14px; }
+.passage-translation summary { cursor: pointer; color: var(--accent); font-size: 13px; padding: 4px 0; }
+.passage-translation .tr-label { font-size: 12px; font-weight: 700; color: var(--sub); margin-top: 8px; }
+.passage-translation .tr-body { white-space: pre-wrap; background: #f8fafc; border-radius: 8px; padding: 8px 10px; }
+
 /* 分析画面 */
 .weak-card { border-left: 4px solid var(--ng); }
 table.history { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--card); border-radius: 12px; }
