@@ -23,7 +23,7 @@ DICT.french.sets[1] = {
     { id: "f1-8", text: "Mon oncle habite à Lyon.", translation: "私のおじはリヨンに住んでいます。",
       blanks: [0, 1], category: "鼻母音" },
     { id: "f1-9", text: "Comment vas-tu ce matin ?", translation: "今朝は調子はどう？",
-      blanks: [0, 4], category: "鼻母音" },
+      blanks: [0, 3], category: "鼻母音" },
     // --- é/è/e の綴り (3) ---
     { id: "f1-10", text: "J'ai acheté un café.", translation: "私はコーヒーを一杯買いました。",
       blanks: [1, 3], category: "é/è/e の綴り" },
@@ -34,8 +34,8 @@ DICT.french.sets[1] = {
     // --- 男性形・女性形の音差 (3) ---
     { id: "f1-13", text: "C'est une grande maison blanche.", translation: "これは大きな白い家です。",
       blanks: [2, 4], category: "男性形・女性形の音差" },
-    { id: "f1-14", text: "Elle est une bonne étudiante.", translation: "彼女は良い学生です。",
-      blanks: [3, 4], category: "男性形・女性形の音差" },
+    { id: "f1-14", text: "C'est une bonne étudiante.", translation: "彼女は良い学生です。",
+      blanks: [2, 3], category: "男性形・女性形の音差" },
     { id: "f1-15", text: "La première question est facile.", translation: "最初の質問は簡単です。",
       blanks: [1], category: "男性形・女性形の音差" },
     // --- 文全体の聞き取り (5) ---

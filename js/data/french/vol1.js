@@ -118,7 +118,7 @@ SUBJECTS.french.vols[1] = {
       question: "Il fait froid. ------- ton manteau !",
       choices: ["Mis", "Mettez-tu", "Mets", "Mettre"],
       answer: 2,
-      explanation: "tu に対する命令法。mettre（着る・置く）の tu の命令形は Mets（-s は落ちない不規則）。「コートを着なさい」。",
+      explanation: "tu に対する命令法。mettre（着る・置く）の tu の命令形は Mets（-er 動詞と違い、語末の -s は落ちない）。「コートを着なさい」。",
       translation: { fr: "Il fait froid. Mets ton manteau !", ja: "寒いよ。コートを着なさい！", en: "It's cold. Put on your coat!" },
       category: "動詞の活用"
     },
@@ -154,7 +154,7 @@ SUBJECTS.french.vols[1] = {
       question: "Nous n'avons pas ------- pain. Il faut en acheter.",
       choices: ["du", "de", "le", "des"],
       answer: 1,
-      explanation: "否定文では部分冠詞・不定冠詞は de になる。ne...pas de pain。",
+      explanation: "否定文では、直接目的語につく部分冠詞・不定冠詞は de になる。ne...pas de pain。",
       translation: { fr: "Nous n'avons pas de pain. Il faut en acheter.", ja: "パンがない。買わなくちゃ。", en: "We don't have any bread. We need to buy some." },
       category: "冠詞・限定詞"
     },
@@ -196,11 +196,11 @@ SUBJECTS.french.vols[1] = {
     },
     {
       id: "f1-q20", vol: 1, part: 5, passageId: null, number: 20,
-      question: "Il travaille ------- son bureau du matin au soir.",
+      question: "Les enfants jouent ------- le jardin.",
       choices: ["dans", "en", "sur", "à"],
       answer: 0,
-      explanation: "「オフィスの中で」＝空間の内部は dans son bureau。à は所属や地点、sur は「〜の上」。",
-      translation: { fr: "Il travaille dans son bureau du matin au soir.", ja: "彼は朝から晩まで自分のオフィスで働いている。", en: "He works in his office from morning till night." },
+      explanation: "「庭の中で」＝空間の内部は dans le jardin。à は le と結合して au になるので à le とは書かない。sur は「〜の上」、en はふつう冠詞のない名詞の前に置く。",
+      translation: { fr: "Les enfants jouent dans le jardin.", ja: "子どもたちは庭で遊んでいる。", en: "The children are playing in the garden." },
       category: "前置詞"
     },
     {
@@ -235,7 +235,7 @@ SUBJECTS.french.vols[1] = {
       question: "---[Q24]--- に入るものを選んでください。",
       choices: ["lui", "vous", "t'", "te"],
       answer: 2,
-      explanation: "「君に電話する」téléphoner ではなく appeler は直接他動詞。tu を受ける直接目的代名詞 te が母音 a の前で t' に。Je t'appellerai。",
+      explanation: "「君に電話する」téléphoner ではなく appeler は直接他動詞。tu を受ける直接目的代名詞 te が母音 a の前で t' に。Je t'appellerai。手紙全体が tu で書かれているので vous ではない。",
       translation: { fr: "Je t'appellerai vendredi soir pour confirmer l'heure.", ja: "時間の確認のため、金曜の夜に電話するね。", en: "I'll call you on Friday evening to confirm the time." },
       category: "代名詞"
     },

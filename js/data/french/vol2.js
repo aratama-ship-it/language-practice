@@ -60,11 +60,11 @@ SUBJECTS.french.vols[2] = {
     },
     {
       id: "f2-q5", vol: 2, part: 5, passageId: null, number: 5,
-      question: "Tu as parlé à Sophie ? — Oui, je ------- ai parlé hier.",
+      question: "— Tu as parlé à Sophie ? — Oui, je ------- ai parlé hier.",
       choices: ["la", "lui", "le", "l'"],
       answer: 1,
       explanation: "parler à quelqu'un（人に話す）は間接目的。Sophie を受ける間接目的代名詞は lui。je lui ai parlé。",
-      translation: { fr: "Tu as parlé à Sophie ? — Oui, je lui ai parlé hier.", ja: "ソフィーと話した？ — うん、昨日話したよ。", en: "Did you talk to Sophie? — Yes, I talked to her yesterday." },
+      translation: { fr: "— Tu as parlé à Sophie ? — Oui, je lui ai parlé hier.", ja: "ソフィーと話した？ — うん、昨日話したよ。", en: "Did you talk to Sophie? — Yes, I talked to her yesterday." },
       category: "代名詞"
     },
     {
@@ -114,11 +114,11 @@ SUBJECTS.french.vols[2] = {
     },
     {
       id: "f2-q11", vol: 2, part: 5, passageId: null, number: 11,
-      question: "Vous avez des enfants ? — Oui, j'------- ai deux.",
+      question: "— Vous avez des enfants ? — Oui, j'------- ai deux.",
       choices: ["leur", "y", "en", "les"],
       answer: 2,
       explanation: "数量を受ける中性代名詞 en（des enfants の de を含む）。j'en ai deux =「（子どもが）2人います」。",
-      translation: { fr: "Vous avez des enfants ? — Oui, j'en ai deux.", ja: "お子さんはいますか？ — はい、2人います。", en: "Do you have children? — Yes, I have two." },
+      translation: { fr: "— Vous avez des enfants ? — Oui, j'en ai deux.", ja: "お子さんはいますか？ — はい、2人います。", en: "Do you have children? — Yes, I have two." },
       category: "代名詞"
     },
     {
@@ -270,7 +270,7 @@ SUBJECTS.french.vols[2] = {
     },
     {
       id: "f2-q28", vol: 2, part: 7, passageId: "f2-p2", number: 28,
-      question: "Avant quand Marc veut-il une réponse ?",
+      question: "Avant quel jour Marc veut-il une réponse ?",
       choices: ["Avant mercredi", "Avant vendredi", "Avant le 12 septembre", "Avant lundi"],
       answer: 1,
       explanation: "本文：\"Pouvez-vous me répondre avant vendredi ?\"（金曜までに返信を）。",

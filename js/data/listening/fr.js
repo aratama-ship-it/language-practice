@@ -67,14 +67,14 @@ LISTEN.french.sets[1] = {
     {
       id: "l1-p7", type: "conversation",
       lines: [
-        { speaker: "W", text: "Bonjour, je voudrais retourner cette veste. Elle est trop petite." },
+        { speaker: "W", text: "Bonjour, je voudrais rapporter cette veste. Elle est trop petite." },
         { speaker: "M", text: "Bien sûr. Vous avez le ticket de caisse ?" },
         { speaker: "W", text: "Oui, le voici. Je peux l'échanger contre une taille plus grande ?" }
       ],
       translation: "女性：こんにちは、このジャケットを返品したいのですが。小さすぎて。／男性：かしこまりました。レシートはお持ちですか？／女性：はい、これです。大きいサイズに交換できますか？",
       questions: [
         { id: "l1-p7-q1", q: "Pourquoi la femme est-elle au magasin ?",
-          choices: ["Pour acheter une veste", "Pour retourner un article", "Pour chercher un emploi", "Pour payer une facture"],
+          choices: ["Pour acheter une veste", "Pour rendre un article", "Pour chercher un emploi", "Pour payer une facture"],
           answer: 1, category: "目的・概要" },
         { id: "l1-p7-q2", q: "Que demande l'homme ?",
           choices: ["Une carte de crédit", "Le ticket de caisse", "Une pièce d'identité", "Un numéro de téléphone"],
@@ -127,9 +127,9 @@ LISTEN.french.sets[1] = {
     {
       id: "l1-p10", type: "talk",
       lines: [
-        { speaker: "N", text: "Bonjour, ceci est un message pour Monsieur Bernard de la part du cabinet du docteur Martin. Nous appelons pour confirmer votre rendez-vous prévu jeudi cinq juin à quatorze heures. Si vous devez le reporter, merci de nous rappeler au zéro un, quarante-cinq, soixante-sept, avant mercredi. Bonne journée." }
+        { speaker: "N", text: "Bonjour, ceci est un message pour Monsieur Bernard de la part du cabinet du docteur Martin. Nous appelons pour confirmer votre rendez-vous prévu jeudi cinq juin à quatorze heures. Si vous devez le reporter, merci de nous rappeler au zéro un, quarante-cinq, soixante-sept, vingt-trois, dix-huit, avant mercredi. Bonne journée." }
       ],
-      translation: "こんにちは、マルタン医師の診療所からベルナール様へのメッセージです。6月5日木曜日14時のご予約を確認するためお電話しました。変更が必要な場合は、水曜日までに01-45-67までお電話ください。よい一日を。",
+      translation: "こんにちは、マルタン医師の診療所からベルナール様へのメッセージです。6月5日木曜日14時のご予約を確認するためお電話しました。変更が必要な場合は、水曜日までに 01 45 67 23 18 までお電話ください。よい一日を。",
       questions: [
         { id: "l1-p10-q1", q: "Quel est le but du message ?",
           choices: ["Annuler un rendez-vous", "Confirmer un rendez-vous", "Proposer une réduction", "Faire de la publicité"],

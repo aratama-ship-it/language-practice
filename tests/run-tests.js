@@ -327,6 +327,9 @@ if (DICT && Dict) {
       assert(Array.isArray(it.blanks) && it.blanks.length >= 1, `${it.id}: blanks が1つ以上`);
       const wc = Dict.tokenize(it.text).length;
       assert(it.blanks.every(b => b >= 0 && b < wc), `${it.id}: blank index が語数内`);
+      const toks = Dict.tokenize(it.text);
+      it.blanks.forEach(b => assert(Dict.normalize(toks[b] || "").length > 0,
+        `${it.id}: 空欄 ${b}（${toks[b]}）が句読点だけの語ではない`));
       assert(subj.categories.indexOf(it.category) >= 0, `${it.id}: category が規定内 (${it.category})`);
     }
   }
