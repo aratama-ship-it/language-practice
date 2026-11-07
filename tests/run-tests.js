@@ -20,7 +20,8 @@ function assert(cond, msg) {
 const DATA_FILES = ["js/subjects.js", "js/data/bank.js",
   "js/data/vol1.js", "js/data/vol2.js", "js/data/vol3.js", "js/data/vol4.js",
   "js/data/vol5.js", "js/data/vol6.js", "js/data/vol7.js", "js/data/vol8.js",
-  "js/data/french/vol1.js", "js/data/french/vol2.js"];
+  "js/data/french/vol1.js", "js/data/french/vol2.js",
+  "js/data/french/vol3.js", "js/data/french/vol4.js", "js/data/french/vol5.js"];
 DATA_FILES.forEach(f => {
   if (fs.existsSync(path.join(root, f))) load(f);
 });
@@ -33,7 +34,7 @@ assert(BANK, "BANK が定義されている");
 // 教科ごとの期待問題数（フランス語は Task 6/7 で追加）
 const EXPECTED = {
   toeic: { 1: 32, 2: 32, 3: 32, 4: 30, 5: 32, 6: 32, 7: 32, 8: 32 },
-  french: { 1: 32, 2: 32 }
+  french: { 1: 32, 2: 32, 3: 32, 4: 32, 5: 32 }
 };
 
 for (const subjId of Object.keys(EXPECTED)) {
