@@ -207,9 +207,13 @@ if (Quiz && D) {
 section("time-scaled");
 if (Quiz && D) {
   let seed = 7; const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+  // TOEIC は本番ペース。Vol.1（Part5 20問・Part6 4問・Part7 8問）は 20×20+37.5×4+61×8=1038秒＝1問約32.4秒
+  assert(Quiz.countForTime(1, 10) === 18 && Quiz.countForTime(1, 20) === 37 && Quiz.countForTime(1, 40) === 74,
+    `TOEIC Vol.1 は本番ペース: 10分=18問、20分=37問、40分=74問（実際: ${[10,20,40].map(m => Quiz.countForTime(1, m))}）`);
+  BANK.setActive("french");
   assert(Quiz.countForTime(1, 20) === 32 && Quiz.countForTime(1, 10) === 16 && Quiz.countForTime(1, 40) === 64,
-    "32問の Vol: 20分=32問、10分=16問、40分=64問");
-  assert(Quiz.countForTime(4, 15) === 30 && Quiz.countForTime(4, 30) === 60, "30問の Vol.4: 15分=30問、30分=60問");
+    "本番ペースの無い教科（フランス語）は 20分=32問の比例");
+  BANK.setActive("toeic");
   for (const min of [10, 15, 25, 30, 40]) {
     const ids = Quiz.scaledSet(1, min, rand);
     const want = Quiz.countForTime(1, min);
@@ -228,7 +232,7 @@ if (Quiz && D) {
       const a = qs[i - 1], b = qs[i];
       assert(a.part < b.part || (a.part === b.part && (a.vol < b.vol || (a.vol === b.vol && a.number < b.number))), `${min}分: 並び順`);
     }
-    if (min > 20) assert(D.vols()[1].questions.every(q => ids.includes(q.id)), `${min}分: この Vol の全問を含む`);
+    if (want > 32) assert(D.vols()[1].questions.every(q => ids.includes(q.id)), `${min}分: この Vol の全問を含む`);
     else assert(qs.every(q => q.vol === 1), `${min}分: この Vol の問題だけ`);
     if (min <= 15) {
       const p5 = qs.filter(q => q.part === 5).length;

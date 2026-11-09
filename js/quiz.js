@@ -8,10 +8,17 @@ var Quiz = {
     }
     return count * 40;
   },
-  // 制限時間（分）から出題数を決める。その Vol の標準の時間（32問なら20分）で全問、のペースを保つ
-  // （10分なら半分、40分なら倍）
+  // 制限時間（分）から出題数を決める。
+  // 教科に本番ペース（TOEIC）があれば、その Vol の部の構成から1問あたりの平均秒数を出して「時間÷平均」
+  // （Vol.1 なら1問約32秒→10分で約18問、20分で約37問）。無ければ標準の時間（32問なら20分）で全問のペース
   countForTime: function (volId, minutes) {
-    var n = BANK.vols()[volId].questions.length;
+    var qs = BANK.vols()[volId].questions, n = qs.length;
+    var pace = BANK.active().pace;
+    if (pace) {
+      var total = 0;
+      qs.forEach(function (q) { total += pace[q.part] || 0; });
+      if (total > 0) return Math.max(1, Math.round(minutes * 60 / (total / n)));
+    }
     var baseMin = this.defaultTimeLimitSec("vol", n) / 60;
     return Math.max(1, Math.round(n * minutes / baseMin));
   },

@@ -67,12 +67,14 @@ var App = {
 
   // ---------- ホーム ----------
   volStats: function (volId, sessions) {
-    var runs = sessions.filter(function (s) { return s.mode === "vol" && s.volId === volId; });
+    // 全問の回（vol）と時間に合わせた回（vol-time）の両方を数える。問題数が回ごとに違うので正答率（%）で比べる
+    var runs = sessions.filter(function (s) { return (s.mode === "vol" || s.mode === "vol-time") && s.volId === volId; });
     var stats = { attempts: runs.length, best: null, last: null };
     runs.forEach(function (s) {
-      var score = s.answers.filter(function (a) { return a.correct; }).length;
-      if (stats.best === null || score > stats.best) stats.best = score;
-      stats.last = score; // sessions は追加順なので最後が直近
+      var total = s.answers.length;
+      var pct = total ? Math.round(s.answers.filter(function (a) { return a.correct; }).length / total * 100) : 0;
+      if (stats.best === null || pct > stats.best) stats.best = pct;
+      stats.last = pct; // sessions は追加順なので最後が直近
     });
     return stats;
   },
@@ -122,7 +124,7 @@ var App = {
         var defMin = Math.round(Quiz.defaultTimeLimitSec("vol", n) / 60);
 
         var meta = n + "問 ・ 受験 " + st.attempts + "回";
-        if (st.best !== null) meta += " ・ 最高 " + st.best + "/" + n + " ・ 前回 " + st.last + "/" + n;
+        if (st.best !== null) meta += " ・ 最高 " + st.best + "% ・ 前回 " + st.last + "%";
 
         var select = self.el("select", { id: "time-vol" + volId },
           [10, 15, 20, 25, 30, 35, 40].map(function (m) {
