@@ -126,7 +126,7 @@ var App = {
 
         var select = self.el("select", { id: "time-vol" + volId },
           [10, 15, 20, 25, 30, 35, 40].map(function (m) {
-            var attrs = { value: m, text: m + "分" };
+            var attrs = { value: m, text: m + "分（1問" + Math.round(m * 60 / n) + "秒）" };
             if (m === defMin) attrs.selected = "";
             return self.el("option", attrs);
           }));
@@ -382,6 +382,7 @@ var App = {
     var total = s.order.length;
     var qid = s.order[this.currentIndex];
     var q = BANK.getQuestion(qid);
+    Quiz.view(s, qid, Date.now()); // 1問あたりの時間を測る（同じ問題の描き直しでも締めて再開するだけ）
 
     document.getElementById("test-progress").textContent =
       "Q" + (this.currentIndex + 1) + " / " + total;
@@ -471,6 +472,25 @@ var App = {
       })
     ]));
 
+    var pace = Quiz.paceStats(record);
+    if (pace) {
+      var fast = pace.averageSec <= pace.targetSec;
+      root.appendChild(this.el("div", { class: "card" }, [
+        this.el("h2", { text: "1問あたりの時間" }),
+        this.el("div", { class: "pace-big " + (fast ? "correct" : "wrong"),
+          text: "平均 " + Math.round(pace.averageSec) + "秒" }),
+        this.el("div", { class: "meta", text: "目安 " + Math.round(pace.targetSec) + "秒（制限時間 " +
+          Math.round(record.timeLimitSec / 60) + "分 ÷ " + total + "問）" + (fast ? " ・ 目安以内" : " ・ 目安より遅い") +
+          (pace.seenCount < total ? " ・ 平均は開いた " + pace.seenCount + "問で計算" : "") }),
+        this.el("div", { class: "pace-slow" }, [this.el("span", { class: "meta", text: "時間がかかった問題：" })]
+          .concat(pace.slowest.map(function (s2) {
+            var q2 = BANK.getQuestion(s2.qid);
+            return self.el("span", { class: "pace-chip " + (s2.correct ? "correct" : "wrong"),
+              text: "Q" + q2.number + " " + s2.timeSec + "秒" });
+          })))
+      ]));
+    }
+
     root.appendChild(this.el("div", { class: "card" }, [
       this.el("h2", { text: "Part別" }),
       this.buildBars(Analysis.partStats([record]).map(function (p) {
@@ -493,7 +513,8 @@ var App = {
         self.el("summary", null, [
           self.el("span", { class: "mark " + (a.correct ? "correct" : "wrong"), text: a.correct ? "○" : "×" }),
           self.el("strong", { text: "Q" + q.number }),
-          self.el("span", { class: "snippet", text: snippet })
+          self.el("span", { class: "snippet", text: snippet }),
+          typeof a.timeSec === "number" ? self.el("span", { class: "q-time", text: a.timeSec + "秒" }) : null
         ]),
         self.el("div", { class: "result-detail" }, self.buildQuestionDetail(q, a.chosen))
       ]));

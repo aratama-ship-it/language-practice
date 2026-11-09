@@ -173,6 +173,34 @@ if (Quiz && D) {
   assert(a1.chosen === null && a1.correct === false, "未回答は不正解扱い");
 }
 
+// ---- 1問あたりの時間 ----
+section("pace");
+if (Quiz && D) {
+  const t0 = 5000000;
+  const s = Quiz.createSession({ mode: "vol", volId: 1, timeLimitSec: 1200, now: t0 });
+  Quiz.view(s, "v1-q1", t0);
+  Quiz.view(s, "v1-q2", t0 + 30000);   // Q1 を30秒
+  Quiz.view(s, "v1-q1", t0 + 50000);   // Q2 を20秒、Q1 に戻る
+  Quiz.view(s, "v1-q1", t0 + 55000);   // 同じ問題の描き直し（答えを選んだ等）は続けて数える
+  const rec = Quiz.grade(s, t0 + 60000); // Q1 に戻ってから10秒
+  const a1 = rec.answers.find(a => a.qid === "v1-q1"), a2 = rec.answers.find(a => a.qid === "v1-q2");
+  assert(a1.timeSec === 40, `Q1 は合計40秒（実際: ${a1.timeSec}）`);
+  assert(a2.timeSec === 20, `Q2 は20秒（実際: ${a2.timeSec}）`);
+  assert(rec.answers.find(a => a.qid === "v1-q3").timeSec === 0, "開かなかった問題は0秒");
+  const pace = Quiz.paceStats(rec);
+  assert(pace && pace.targetSec === 1200 / 32, "目安は制限時間÷問題数");
+  assert(pace.averageSec === 30 && pace.seenCount === 2, `平均は開いた問題だけで計算（(40+20)/2=30、実際: ${pace.averageSec}）`);
+  assert(pace.slowest[0].qid === "v1-q1" && pace.slowest.length === 2, "時間がかかった順（開かなかった問題は入れない）");
+
+  const s2 = Quiz.createSession({ mode: "vol", volId: 1, timeLimitSec: 600, now: t0 });
+  Quiz.view(s2, "v1-q5", t0);
+  const rec2 = Quiz.grade(s2, t0 + 900000); // 時間切れの後に採点
+  assert(rec2.answers.find(a => a.qid === "v1-q5").timeSec === 600, "制限時間を超えた分は数えない");
+
+  const old = { timeLimitSec: 1200, timeUsedSec: 600, answers: [{ qid: "v1-q1", chosen: 0, correct: true }] };
+  assert(Quiz.paceStats(old) === null, "計測の無い古い記録は集計しない（表示しない）");
+}
+
 // ---- 10分版（ハーフモード） ----
 section("half");
 if (Quiz && D) {

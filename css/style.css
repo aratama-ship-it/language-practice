@@ -203,6 +203,12 @@ input[type="text"], input[type="number"], textarea, select { font-size: 16px; }
 .passage-translation .tr-label { font-size: 12px; font-weight: 700; color: var(--sub); margin-top: 8px; }
 .passage-translation .tr-body { white-space: pre-wrap; background: #f8fafc; border-radius: 8px; padding: 8px 10px; }
 
+/* 1問あたりの時間 */
+.pace-big { font-size: 24px; font-weight: 700; margin: 4px 0; }
+.pace-slow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+.pace-chip { font-size: 13px; border: 1px solid var(--line); border-radius: 12px; padding: 1px 10px; background: var(--card); }
+.result-item .q-time { color: var(--sub); font-size: 12px; white-space: nowrap; }
+
 /* 分析画面 */
 .weak-card { border-left: 4px solid var(--ng); }
 table.history { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--card); border-radius: 12px; }

@@ -41,7 +41,32 @@ var Quiz = {
       mode: opts.mode, volId: opts.volId || null, category: opts.category || null,
       halfKey: opts.halfKey || null,
       timeLimitSec: opts.timeLimitSec, startedAt: opts.now,
-      order: qids, answers: answers
+      order: qids, answers: answers,
+      timeSpent: {},   // 問題ごとに画面に出していた時間（ミリ秒）。見直しで戻った分も足す
+      viewing: null    // いま表示している問題 { qid, since }
+    };
+  },
+  // 表示する問題が変わったときに呼ぶ。前の問題の表示時間を締めて、次の問題の計測を始める（qid が null なら締めるだけ）
+  view: function (session, qid, now) {
+    if (!session.timeSpent) session.timeSpent = {};
+    var v = session.viewing;
+    if (v) session.timeSpent[v.qid] = (session.timeSpent[v.qid] || 0) + Math.max(0, now - v.since);
+    session.viewing = qid ? { qid: qid, since: now } : null;
+  },
+  // 1問あたりの時間の集計。目安＝制限時間÷問題数、平均＝開いた問題にかけた時間の合計÷開いた問題数
+  // （途中で採点しても、見ていない問題で平均が薄まらないように）。計測の無い古い記録（timeSec が無い）は null を返す
+  paceStats: function (record) {
+    var n = record.answers.length;
+    if (!n || record.answers.some(function (a) { return typeof a.timeSec !== "number"; })) return null;
+    var timed = record.answers.map(function (a) { return { qid: a.qid, timeSec: a.timeSec, correct: a.correct }; });
+    var seen = timed.filter(function (a) { return a.timeSec > 0; });
+    var slowest = seen.slice().sort(function (x, y) { return y.timeSec - x.timeSec; }).slice(0, 3);
+    var sum = seen.reduce(function (s, a) { return s + a.timeSec; }, 0);
+    return {
+      targetSec: record.timeLimitSec / n,
+      averageSec: seen.length ? sum / seen.length : 0,
+      seenCount: seen.length,
+      slowest: slowest
     };
   },
   selectAnswer: function (session, qid, idx) {
@@ -58,6 +83,9 @@ var Quiz = {
   },
   grade: function (session, now) {
     var used = Math.min(session.timeLimitSec, Math.round((now - session.startedAt) / 1000));
+    // 表示中の問題の時間を締める。時間切れ後に画面を開いたままでも、制限時間を超えた分は数えない
+    this.view(session, null, Math.min(now, session.startedAt + session.timeLimitSec * 1000));
+    var spent = session.timeSpent || {};
     var iso = new Date(now).toISOString();
     return {
       id: iso, date: iso, mode: session.mode, volId: session.volId,
@@ -66,7 +94,8 @@ var Quiz = {
       answers: session.order.map(function (qid) {
         var chosen = session.answers[qid];
         var q = BANK.getQuestion(qid);
-        return { qid: qid, chosen: chosen, correct: chosen !== null && chosen === q.answer };
+        return { qid: qid, chosen: chosen, correct: chosen !== null && chosen === q.answer,
+          timeSec: Math.round((spent[qid] || 0) / 1000) };
       })
     };
   }
