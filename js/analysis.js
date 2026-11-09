@@ -81,7 +81,10 @@ var Analysis = {
       wrongAvg: avg(timed.filter(function (a) { return !a.correct; })),
       wrongCount: timed.filter(function (a) { return !a.correct; }).length,
       categories: BANK.categories().map(function (c) { var l = byCat[c] || []; return { label: c, count: l.length, avgSec: avg(l) }; }),
-      parts: [5, 6, 7].map(function (p) { var l = byPart[p] || []; return { label: labels[p], count: l.length, avgSec: avg(l) }; })
+      parts: [5, 6, 7].map(function (p) {
+        var l = byPart[p] || [], pace = BANK.active().pace;
+        return { label: labels[p], count: l.length, avgSec: avg(l), targetSec: pace ? pace[p] : null };
+      })
     };
   },
   // 1問1行の CSV。時間を記録していない古い回は time_sec を空にする

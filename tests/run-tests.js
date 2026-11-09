@@ -188,7 +188,9 @@ if (Quiz && D) {
   assert(a2.timeSec === 20, `Q2 は20秒（実際: ${a2.timeSec}）`);
   assert(rec.answers.find(a => a.qid === "v1-q3").timeSec === 0, "開かなかった問題は0秒");
   const pace = Quiz.paceStats(rec);
-  assert(pace && pace.targetSec === 1200 / 32, "目安は制限時間÷問題数");
+  assert(pace && pace.targetLabel === "本番ペース", "TOEIC の目安は本番ペース");
+  assert(Math.abs(pace.targetSec - 20) < 1e-9, `開いた2問は Part 5 なので目安は20秒（実際: ${pace.targetSec}）`);
+  assert(pace.parts.length === 1 && pace.parts[0].part === 5 && pace.parts[0].targetSec === 20 && pace.parts[0].averageSec === 30, "部別の平均と目安");
   assert(pace.averageSec === 30 && pace.seenCount === 2, `平均は開いた問題だけで計算（(40+20)/2=30、実際: ${pace.averageSec}）`);
   assert(pace.slowest[0].qid === "v1-q1" && pace.slowest.length === 2, "時間がかかった順（開かなかった問題は入れない）");
 

@@ -497,9 +497,19 @@ var App = {
         this.el("h2", { text: "1問あたりの時間" }),
         this.el("div", { class: "pace-big " + (fast ? "correct" : "wrong"),
           text: "平均 " + Math.round(pace.averageSec) + "秒" }),
-        this.el("div", { class: "meta", text: "目安 " + Math.round(pace.targetSec) + "秒（制限時間 " +
-          Math.round(record.timeLimitSec / 60) + "分 ÷ " + total + "問）" + (fast ? " ・ 目安以内" : " ・ 目安より遅い") +
+        this.el("div", { class: "meta", text: "目安 " + Math.round(pace.targetSec) + "秒（" +
+          (pace.targetLabel ? pace.targetLabel + "・この回の部の構成で計算" :
+            "制限時間 " + Math.round(record.timeLimitSec / 60) + "分 ÷ " + total + "問") + "）" +
+          (fast ? " ・ 目安以内" : " ・ 目安より遅い") +
           (pace.seenCount < total ? " ・ 平均は開いた " + pace.seenCount + "問で計算" : "") }),
+        pace.targetLabel && pace.parts.length ? this.el("div", { class: "pace-parts" }, pace.parts.map(function (r) {
+          var ok = r.averageSec <= r.targetSec;
+          return self.el("div", { class: "pace-part-row" }, [
+            self.el("span", { class: "bar-label", text: BANK.active().sectionLabels[r.part] }),
+            self.el("span", { class: ok ? "correct" : "wrong", text: "平均 " + Math.round(r.averageSec) + "秒" }),
+            self.el("span", { class: "meta", text: " ／ " + pace.targetLabel + " " + Math.round(r.targetSec) + "秒（" + r.count + "問）" })
+          ]);
+        })) : null,
         this.el("div", { class: "pace-slow" }, [this.el("span", { class: "meta", text: "時間がかかった問題：" })]
           .concat(pace.slowest.map(function (s2) {
             var q2 = BANK.getQuestion(s2.qid);
@@ -699,7 +709,8 @@ var App = {
           return self.el("div", { class: "bar-row" }, [
             self.el("span", { class: "bar-label", text: r.label }),
             self.el("span", { class: "bar-track" }, [fill]),
-            self.el("span", { class: "bar-value", text: Math.round(r.avgSec) + "秒（" + r.count + "問）" })
+            self.el("span", { class: "bar-value", text: Math.round(r.avgSec) + "秒（" + r.count + "問）" +
+              (r.targetSec ? " ／ 目安" + Math.round(r.targetSec) + "秒" : "") })
           ]);
         });
       };

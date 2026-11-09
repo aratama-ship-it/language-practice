@@ -207,6 +207,8 @@ input[type="text"], input[type="number"], textarea, select { font-size: 16px; }
 .pace-big { font-size: 24px; font-weight: 700; margin: 4px 0; }
 .pace-slow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
 .pace-chip { font-size: 13px; border: 1px solid var(--line); border-radius: 12px; padding: 1px 10px; background: var(--card); }
+.pace-parts { margin-top: 8px; }
+.pace-part-row { display: flex; gap: 8px; align-items: baseline; font-size: 14px; margin: 2px 0; }
 .result-item .q-time { color: var(--sub); font-size: 12px; white-space: nowrap; }
 
 /* 分析画面 */

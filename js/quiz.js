@@ -111,8 +111,8 @@ var Quiz = {
     if (v) session.timeSpent[v.qid] = (session.timeSpent[v.qid] || 0) + Math.max(0, now - v.since);
     session.viewing = qid ? { qid: qid, since: now } : null;
   },
-  // 1問あたりの時間の集計。目安＝制限時間÷問題数、平均＝開いた問題にかけた時間の合計÷開いた問題数
-  // （途中で採点しても、見ていない問題で平均が薄まらないように）。計測の無い古い記録（timeSec が無い）は null を返す
+  // 1問あたりの時間の集計。平均＝開いた問題にかけた時間の合計÷開いた問題数（途中で採点しても薄まらないように）。
+  // 目安＝教科に本番ペース（pace）があればその部の秒数で、無ければ制限時間÷問題数。計測の無い古い記録は null
   paceStats: function (record) {
     var n = record.answers.length;
     if (!n || record.answers.some(function (a) { return typeof a.timeSec !== "number"; })) return null;
@@ -120,10 +120,26 @@ var Quiz = {
     var seen = timed.filter(function (a) { return a.timeSec > 0; });
     var slowest = seen.slice().sort(function (x, y) { return y.timeSec - x.timeSec; }).slice(0, 3);
     var sum = seen.reduce(function (s, a) { return s + a.timeSec; }, 0);
+    var pace = BANK.active().pace || null;
+    function partOf(qid) { var q = BANK.getQuestion(qid); return q ? q.part : null; }
+    function targetFor(list) {
+      if (!pace) return record.timeLimitSec / n;
+      var t = 0; list.forEach(function (a) { t += pace[partOf(a.qid)] || 0; });
+      return list.length ? t / list.length : 0;
+    }
+    var parts = [5, 6, 7].map(function (p) {
+      var all = timed.filter(function (a) { return partOf(a.qid) === p; });
+      var s = all.filter(function (a) { return a.timeSec > 0; });
+      return { part: p, count: s.length,
+        averageSec: s.length ? s.reduce(function (x, a) { return x + a.timeSec; }, 0) / s.length : 0,
+        targetSec: pace ? pace[p] : record.timeLimitSec / n };
+    }).filter(function (r) { return r.count > 0; });
     return {
-      targetSec: record.timeLimitSec / n,
+      targetSec: targetFor(seen.length ? seen : timed),
+      targetLabel: pace ? pace.label : null,
       averageSec: seen.length ? sum / seen.length : 0,
       seenCount: seen.length,
+      parts: parts,
       slowest: slowest
     };
   },
