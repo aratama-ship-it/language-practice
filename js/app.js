@@ -126,7 +126,7 @@ var App = {
 
         var select = self.el("select", { id: "time-vol" + volId },
           [10, 15, 20, 25, 30, 35, 40].map(function (m) {
-            var attrs = { value: m, text: m + "分（1問" + Math.round(m * 60 / n) + "秒）" };
+            var attrs = { value: m, text: m + "分・" + Quiz.countForTime(volId, m) + "問" };
             if (m === defMin) attrs.selected = "";
             return self.el("option", attrs);
           }));
@@ -214,9 +214,15 @@ var App = {
     this.showScreen("home");
   },
 
+  // 制限時間で出題数が変わる（標準の時間なら全問、10分なら半分、40分なら倍）。標準の時間は従来どおりの「vol」として記録する
   startVol: function (volId) {
     var min = Number(document.getElementById("time-vol" + volId).value);
-    this.startTest({ mode: "vol", volId: volId, timeLimitSec: min * 60 });
+    var n = BANK.vols()[volId].questions.length;
+    if (Quiz.countForTime(volId, min) === n) {
+      this.startTest({ mode: "vol", volId: volId, timeLimitSec: min * 60 });
+      return;
+    }
+    this.startTest({ mode: "vol-time", volId: volId, questionIds: Quiz.scaledSet(volId, min), timeLimitSec: min * 60 });
   },
 
   startHalf: function (volId, halfKey) {
@@ -251,6 +257,18 @@ var App = {
       questionIds: qids,
       timeLimitSec: Quiz.defaultTimeLimitSec(mode, qids.length)
     });
+  },
+
+  // 1問ごとの時間を CSV で書き出す（表計算で傾向を見る用。Excel で文字化けしないよう BOM を付ける）
+  exportTimeCSV: function () {
+    var csv = "\ufeff" + Analysis.timeCSV(Storage2.load().sessions, BANK.activeId);
+    var d = new Date();
+    var name = BANK.activeId + "-times-" + d.getFullYear() + "-" +
+      ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + ".csv";
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
   },
 
   exportData: function () {
@@ -668,6 +686,34 @@ var App = {
           })
         ]));
       });
+    }
+
+    var ts = Analysis.timeStats(sessions);
+    if (ts.samples > 0) {
+      var maxSec = 1;
+      ts.categories.concat(ts.parts).forEach(function (r) { if (r.avgSec > maxSec) maxSec = r.avgSec; });
+      var secRows = function (rows) {
+        return rows.filter(function (r) { return r.count > 0; }).map(function (r) {
+          var fill = self.el("span", { class: "bar-fill" });
+          fill.style.width = Math.round(r.avgSec / maxSec * 100) + "%";
+          return self.el("div", { class: "bar-row" }, [
+            self.el("span", { class: "bar-label", text: r.label }),
+            self.el("span", { class: "bar-track" }, [fill]),
+            self.el("span", { class: "bar-value", text: Math.round(r.avgSec) + "秒（" + r.count + "問）" })
+          ]);
+        });
+      };
+      root.appendChild(this.el("div", { class: "card" }, [
+        this.el("h2", { text: "1問あたりの時間（全期間）" }),
+        this.el("p", { class: "meta", text: "時間を記録した " + ts.samples + "問の平均。正解 " +
+          (ts.correctCount ? Math.round(ts.correctAvg) + "秒" : "—") + " ／ 不正解 " +
+          (ts.wrongCount ? Math.round(ts.wrongAvg) + "秒" : "—") }),
+        this.el("h3", { text: "カテゴリ別" })
+      ].concat(secRows(ts.categories)).concat([this.el("h3", { text: "部別" })]).concat(secRows(ts.parts)).concat([
+        this.el("div", { class: "toolbar" }, [
+          this.el("button", { text: "時間のデータを書き出す（CSV）", onclick: function () { self.exportTimeCSV(); } })
+        ])
+      ])));
     }
 
     root.appendChild(this.el("h2", { text: "セッション履歴" }));

@@ -201,6 +201,53 @@ if (Quiz && D) {
   assert(Quiz.paceStats(old) === null, "計測の無い古い記録は集計しない（表示しない）");
 }
 
+// ---- 制限時間で出題数を変える ----
+section("time-scaled");
+if (Quiz && D) {
+  let seed = 7; const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+  assert(Quiz.countForTime(1, 20) === 32 && Quiz.countForTime(1, 10) === 16 && Quiz.countForTime(1, 40) === 64,
+    "32問の Vol: 20分=32問、10分=16問、40分=64問");
+  assert(Quiz.countForTime(4, 15) === 30 && Quiz.countForTime(4, 30) === 60, "30問の Vol.4: 15分=30問、30分=60問");
+  for (const min of [10, 15, 25, 30, 40]) {
+    const ids = Quiz.scaledSet(1, min, rand);
+    const want = Quiz.countForTime(1, min);
+    assert(new Set(ids).size === ids.length, `${min}分: 重複がない`);
+    assert(Math.abs(ids.length - want) <= 2, `${min}分: 出題数が目標 ${want} に近い（実際: ${ids.length}）`);
+    const qs = ids.map(id => D.getQuestion(id));
+    // 文章の問題は全部そろって出る
+    const byP = {};
+    qs.filter(q => q.passageId).forEach(q => { byP[q.passageId] = (byP[q.passageId] || 0) + 1; });
+    for (const pid of Object.keys(byP)) {
+      const all = D.allQuestions().filter(q => q.passageId === pid).length;
+      assert(byP[pid] === all, `${min}分: 文章 ${pid} の問題がそろっている`);
+    }
+    // 並びは 部 → Vol → 番号
+    for (let i = 1; i < qs.length; i++) {
+      const a = qs[i - 1], b = qs[i];
+      assert(a.part < b.part || (a.part === b.part && (a.vol < b.vol || (a.vol === b.vol && a.number < b.number))), `${min}分: 並び順`);
+    }
+    if (min > 20) assert(D.vols()[1].questions.every(q => ids.includes(q.id)), `${min}分: この Vol の全問を含む`);
+    else assert(qs.every(q => q.vol === 1), `${min}分: この Vol の問題だけ`);
+    if (min <= 15) {
+      const p5 = qs.filter(q => q.part === 5).length;
+      assert(p5 > 0 && p5 < qs.length, `${min}分: 文法と読解の両方が入る`);
+    }
+  }
+  load("js/analysis.js"); const An = ctx.Analysis;
+  const lbl = An.sessionLabel({ mode: "vol-time", volId: 1, timeLimitSec: 600, answers: new Array(16).fill({}) });
+  assert(/10分・16問/.test(lbl), "時間に合わせた回の表示名");
+  const sess = [{ date: "2026-11-09T00:00:00Z", mode: "vol", volId: 1, timeLimitSec: 1200, timeUsedSec: 100, answers: [
+    { qid: "v1-q1", chosen: 0, correct: true, timeSec: 30 },
+    { qid: "v1-q2", chosen: 1, correct: false, timeSec: 50 },
+    { qid: "v1-q3", chosen: null, correct: false, timeSec: 0 },
+    { qid: "v1-q4", chosen: 1, correct: true } ] }];
+  const ts = An.timeStats(sess);
+  assert(ts.samples === 2 && ts.correctAvg === 30 && ts.wrongAvg === 50, "時間の傾向: 記録のある問題だけで平均");
+  const csv = An.timeCSV(sess, "toeic").trim().split("\n");
+  assert(csv.length === 5 && csv[0].startsWith("date,subject,set"), "CSV: 見出し＋1問1行");
+  assert(csv[4].endsWith(","), "CSV: 時間の記録が無い問題は time_sec が空");
+}
+
 // ---- 10分版（ハーフモード） ----
 section("half");
 if (Quiz && D) {

@@ -63,7 +63,47 @@ var Analysis = {
     for (var qid in latest) if (!latest[qid].correct) out.push(qid);
     return out;
   },
+  // 1問あたりの時間の傾向（timeSec を記録した解答だけ。開かなかった問題＝0秒は除く）
+  timeStats: function (sessions) {
+    var timed = this._flatAnswers(sessions).filter(function (a) { return typeof a.timeSec === "number" && a.timeSec > 0; });
+    function avg(list) { return list.length ? list.reduce(function (s, a) { return s + a.timeSec; }, 0) / list.length : 0; }
+    var byCat = {}, byPart = {};
+    timed.forEach(function (a) {
+      var q = BANK.getQuestion(a.qid); if (!q) return;
+      (byCat[q.category] = byCat[q.category] || []).push(a);
+      (byPart[q.part] = byPart[q.part] || []).push(a);
+    });
+    var labels = BANK.active().sectionLabels;
+    return {
+      samples: timed.length,
+      correctAvg: avg(timed.filter(function (a) { return a.correct; })),
+      correctCount: timed.filter(function (a) { return a.correct; }).length,
+      wrongAvg: avg(timed.filter(function (a) { return !a.correct; })),
+      wrongCount: timed.filter(function (a) { return !a.correct; }).length,
+      categories: BANK.categories().map(function (c) { var l = byCat[c] || []; return { label: c, count: l.length, avgSec: avg(l) }; }),
+      parts: [5, 6, 7].map(function (p) { var l = byPart[p] || []; return { label: labels[p], count: l.length, avgSec: avg(l) }; })
+    };
+  },
+  // 1問1行の CSV。時間を記録していない古い回は time_sec を空にする
+  timeCSV: function (sessions, subjectId) {
+    var self = this;
+    function cell(v) { v = v === null || v === undefined ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+    var rows = [["date", "subject", "set", "time_limit_sec", "time_used_sec", "qid", "vol", "part", "category", "correct", "answered", "time_sec"]];
+    sessions.forEach(function (s) {
+      (s.answers || []).forEach(function (a) {
+        var q = BANK.getQuestion(a.qid);
+        rows.push([s.date, subjectId, self.sessionLabel(s), s.timeLimitSec, s.timeUsedSec, a.qid,
+          q ? q.vol : "", q ? q.part : "", q ? q.category : "", a.correct ? 1 : 0, a.chosen === null ? 0 : 1,
+          typeof a.timeSec === "number" ? a.timeSec : ""]);
+      });
+    });
+    return rows.map(function (r) { return r.map(cell).join(","); }).join("\n") + "\n";
+  },
   sessionLabel: function (s) {
+    if (s.mode === "vol-time") {
+      var vt = BANK.vols()[s.volId];
+      return (vt ? vt.label : "Vol." + s.volId) + "（" + Math.round(s.timeLimitSec / 60) + "分・" + (s.answers || []).length + "問）";
+    }
     if (s.mode === "vol") {
       var v = BANK.vols()[s.volId];
       return v ? v.label : "Vol." + s.volId;

@@ -8,6 +8,64 @@ var Quiz = {
     }
     return count * 40;
   },
+  // 制限時間（分）から出題数を決める。その Vol の標準の時間（32問なら20分）で全問、のペースを保つ
+  // （10分なら半分、40分なら倍）
+  countForTime: function (volId, minutes) {
+    var n = BANK.vols()[volId].questions.length;
+    var baseMin = this.defaultTimeLimitSec("vol", n) / 60;
+    return Math.max(1, Math.round(n * minutes / baseMin));
+  },
+  // 問題を「出題の単位」に分ける。第1部は1問ずつ、第2・3部は文章ごと（同じ文章の問題はまとめて出す）
+  _units: function (questions) {
+    var units = [], byPassage = {};
+    questions.forEach(function (q) {
+      if (!q.passageId) { units.push({ part5: true, qs: [q] }); return; }
+      if (!byPassage[q.passageId]) { byPassage[q.passageId] = { part5: false, qs: [] }; units.push(byPassage[q.passageId]); }
+      byPassage[q.passageId].qs.push(q);
+    });
+    return units;
+  },
+  // 単位の集まりから、文法と読解の比率を保ってだいたい target 問を無作為に選ぶ（文章は分けない）
+  _pickUnits: function (units, target, rand) {
+    function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rand() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+    var singles = shuffle(units.filter(function (u) { return u.part5; }));
+    var groups = shuffle(units.filter(function (u) { return !u.part5; }));
+    var total = 0; units.forEach(function (u) { total += u.qs.length; });
+    if (target >= total) return units.slice();
+    var groupQs = total - singles.length;
+    var readingWant = Math.round(target * groupQs / total);
+    var picked = [], got = 0;
+    for (var i = 0; i < groups.length && got < readingWant; i++) {
+      // 次の文章を入れると目標から遠ざかるなら入れない（少なくとも読解が欲しいときは1つは入れる）
+      var size = groups[i].qs.length;
+      if (got > 0 && Math.abs(readingWant - (got + size)) > Math.abs(readingWant - got)) break;
+      picked.push(groups[i]); got += size;
+    }
+    var need = Math.max(0, target - got);
+    picked = picked.concat(singles.slice(0, need));
+    return picked;
+  },
+  // 時間に合わせた出題セット。少ないときはこの Vol から、多いときはこの Vol 全問＋同じ教科の他の Vol から足す。
+  // 並びは 第1部 → 第2部 → 第3部、同じ部の中は Vol 順・問題番号順（文章の問題は続けて並ぶ）。rand は 0〜1 の乱数関数
+  scaledSet: function (volId, minutes, rand) {
+    rand = rand || Math.random;
+    var vols = BANK.vols();
+    var own = vols[volId].questions;
+    var target = this.countForTime(volId, minutes);
+    var chosen;
+    if (target <= own.length) {
+      chosen = this._pickUnits(this._units(own), target, rand);
+    } else {
+      var others = [];
+      Object.keys(vols).map(Number).filter(function (v) { return v !== volId; })
+        .forEach(function (v) { others = others.concat(vols[v].questions); });
+      chosen = this._units(own).concat(this._pickUnits(this._units(others), target - own.length, rand));
+    }
+    var qs = [];
+    chosen.forEach(function (u) { qs = qs.concat(u.qs); });
+    qs.sort(function (a, b) { return a.part - b.part || a.vol - b.vol || a.number - b.number; });
+    return qs.map(function (q) { return q.id; });
+  },
   // 10分版の分割セット。Part 5 以外を含むVolは文法/読解、Part 5 のみのVolは前半/後半
   halfSets: function (volId) {
     var qs = BANK.vols()[volId].questions;
