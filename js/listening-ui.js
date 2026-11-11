@@ -59,7 +59,7 @@ var ListeningUI = {
     var map = {};
     if (!window.speechSynthesis) return map;
     var voices = window.speechSynthesis.getVoices();
-    var bad = /Bad News|Bahh|Boing|Bubbles|Cellos|Trinoids|Zarvox|Wobble|Whisper|Organ|Jester|Superstar|Good News|Pipe|Albert/i;
+    var bad = /Bad News|Bahh|Boing|Bubbles|Cellos|Trinoids|Zarvox|Wobble|Whisper|Organ|Jester|Superstar|Good News|Pipe|Albert|Eddy|Flo\b|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley/i;
     var base = lang.slice(0, 2);
     var cands = voices.filter(function (v) { return v.lang && v.lang.slice(0, 2) === base && !bad.test(v.name); });
     if (cands.length === 0) cands = voices.filter(function (v) { return v.lang && v.lang.slice(0, 2) === base; });
@@ -131,6 +131,9 @@ var ListeningUI = {
     });
     root.appendChild(tabs);
     root.appendChild(this.el("h1", { text: "リスニング" }));
+    root.appendChild(App.voiceCheck(subj.lang, function () { return self._voiceMap(subj.lang, ["N"]).N; }, function (t) {
+      self.playPassage({ lines: [{ speaker: "N", text: t }] }, false);
+    }));
     if (!window.speechSynthesis) {
       root.appendChild(this.el("p", { class: "subtitle", text: "⚠ この環境では音声が使えません。スクリプト表示で確認できます。" }));
     }

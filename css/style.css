@@ -211,6 +211,11 @@ input[type="text"], input[type="number"], textarea, select { font-size: 16px; }
 .pace-part-row { display: flex; gap: 8px; align-items: baseline; font-size: 14px; margin: 2px 0; }
 .result-item .q-time { color: var(--sub); font-size: 12px; white-space: nowrap; }
 
+/* 読み上げの声の確認 */
+.voice-check { padding: 10px 14px; }
+.voice-check .row { margin: 8px 0 4px; }
+.voice-check .subtitle { margin-bottom: 0; }
+
 /* 分析画面 */
 .weak-card { border-left: 4px solid var(--ng); }
 table.history { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--card); border-radius: 12px; }

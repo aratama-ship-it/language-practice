@@ -41,7 +41,7 @@ var DictationUI = {
   _pickVoice: function (lang) {
     if (!window.speechSynthesis) return null;
     var voices = window.speechSynthesis.getVoices();
-    var bad = /Bad News|Bahh|Boing|Bubbles|Cellos|Trinoids|Zarvox|Wobble|Whisper|Organ|Jester|Superstar|Good News|Pipe|Albert/i;
+    var bad = /Bad News|Bahh|Boing|Bubbles|Cellos|Trinoids|Zarvox|Wobble|Whisper|Organ|Jester|Superstar|Good News|Pipe|Albert|Eddy|Flo\b|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley/i;
     var base = lang.slice(0, 2);
     var cands = voices.filter(function (v) { return v.lang && v.lang.slice(0, 2) === base; });
     // 地域まで合わせる教科（中国語＝台湾の zh-TW）は、同じ地域の声を先にする
@@ -81,6 +81,7 @@ var DictationUI = {
     App.clear(root);
     var subj = DICT[this.subjectId];
     var store = this._load(this.subjectId);
+    var voiceBox = App.voiceCheck(subj.lang, function () { return self._pickVoice(subj.lang); }, function (t) { self.speak(t, false); });
 
     // 教科タブ
     var tabs = this.el("div", { class: "subject-tabs" });
@@ -93,6 +94,7 @@ var DictationUI = {
     });
     root.appendChild(tabs);
     root.appendChild(this.el("h1", { text: "ディクテーション" }));
+    root.appendChild(voiceBox);
 
     var autofocus = this.el("input", { type: "checkbox" });
     autofocus.checked = this._autofocusEnabled();

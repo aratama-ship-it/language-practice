@@ -8,6 +8,45 @@ var App = {
   currentIndex: 0,
 
   // ---------- DOM ヘルパー ----------
+  // 読み上げに使う声を画面に出す（耳で聞き分けなくても、名前と地域コードで台湾の声かどうか分かるように）。
+  // 中国語には、台湾と中国本土で発音がはっきり違う「垃圾」（台湾 lèsè／本土 lājī）を読ませる確認ボタンを付ける
+  voiceCheck: function (lang, webVoiceFn, speakFn) {
+    var self = this;
+    var REGION = { "zh-tw": "台湾", "zh-cn": "中国本土", "zh-hk": "香港", "en-us": "アメリカ", "en-gb": "イギリス",
+      "en-au": "オーストラリア", "fr-fr": "フランス", "fr-ca": "カナダ" };
+    function label(code) {
+      var c = String(code || "").replace("_", "-").toLowerCase();
+      return (REGION[c] ? REGION[c] + "・" : "") + code;
+    }
+    var line = this.el("span", { text: "確認中…" });
+    var box = this.el("div", { class: "card voice-check" }, [
+      this.el("div", { class: "meta" }, ["読み上げの声：", line])
+    ]);
+    function show(name, code) {
+      line.textContent = name ? name + "（" + label(code) + "）" : "見つかりません（端末の設定で" + label(lang) + "の声を追加してください）";
+      if (name && !self.sameRegion(code, lang)) line.textContent += " ※" + label(lang) + " の声ではありません";
+    }
+    if (Native.available) {
+      Native.speech.voices({ lang: lang }).then(function (r) {
+        var v = (r.voices || [])[0]; show(v && v.name, v && v.language);
+      }).catch(function () { show(null); });
+    } else if (window.speechSynthesis) {
+      var pick = function () { var v = webVoiceFn(); show(v && v.name, v && v.lang); };
+      if (window.speechSynthesis.getVoices().length) pick();
+      else window.speechSynthesis.addEventListener("voiceschanged", pick, { once: true });
+    } else {
+      show(null);
+    }
+    if (lang.slice(0, 2) === "zh") {
+      box.appendChild(this.el("div", { class: "row" }, [
+        this.el("button", { text: "▶「垃圾」で声を確かめる", onclick: function () { speakFn("垃圾"); } })
+      ]));
+      box.appendChild(this.el("p", { class: "subtitle", text: "台湾の声なら「ルァスァ（lèsè）」、中国本土の声なら「ラージー（lājī）」と読みます。" +
+        "台湾の声の名前は Meijia（美佳）です。" }));
+    }
+    return box;
+  },
+
   // 言語コードの地域まで一致するか（"zh-TW" と "zh_TW" を同じとみなす）
   sameRegion: function (a, b) {
     return String(a).replace("_", "-").toLowerCase() === String(b).replace("_", "-").toLowerCase();

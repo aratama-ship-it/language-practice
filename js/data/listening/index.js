@@ -6,7 +6,7 @@ var LISTEN = {
     sets: {}
   },
   french: {
-    id: "french", label: "フランス語", lang: "fr-FR", storageKey: "french-listening-data",
+    id: "french", label: "フランス語", lang: "fr-FR", voiceRegion: true, storageKey: "french-listening-data",
     categories: ["応答選択", "目的・概要", "詳細", "言い換え・推測", "次の行動・依頼", "話し手・場面"],
     sets: {}
   },

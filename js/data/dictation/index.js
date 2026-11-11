@@ -7,7 +7,7 @@ var DICT = {
     sets: {}
   },
   french: {
-    id: "french", label: "フランス語", lang: "fr-FR", storageKey: "french-dictation-data",
+    id: "french", label: "フランス語", lang: "fr-FR", voiceRegion: true, storageKey: "french-dictation-data",
     categories: ["リエゾン・アンシェヌマン", "鼻母音", "数字",
       "é/è/e の綴り", "男性形・女性形の音差", "文全体の聞き取り"],
     sets: {}
