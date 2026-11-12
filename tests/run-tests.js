@@ -10,9 +10,11 @@ function load(rel) {
 }
 
 let failures = 0;
+let assertions = 0;
 let current = "";
 function section(name) { current = name; }
 function assert(cond, msg) {
+  assertions++;
   if (!cond) { failures++; console.error(`FAIL [${current}] ${msg}`); }
 }
 
@@ -339,6 +341,65 @@ if (Analysis && D) {
     "Vol.4 後半のラベル");
 }
 
+// ---- Progress: local dates, windows and review ordering ----
+load("js/progress.js");
+section("progress");
+{
+  const P = ctx.Progress;
+  const lookup = id => id === "gone" ? null : {category:"A",part:5};
+  const session = (date, n, correct) => ({date, answers:Array.from({length:n}, (_,i) => ({qid:"q"+i,correct:i<correct,chosen:0,timeSec:i ? 20 : 0}))});
+  const date = "2026-11-11T15:30:00.000Z";
+  const oldTZ = process.env.TZ;
+  process.env.TZ = "Asia/Tokyo";
+  assert(P.localDay(date) === "2026-11-12", "UTC 15:30 は日本時間の翌日");
+  assert(P.localDay("invalid") === null, "不正な日付を除く");
+  assert(P.flatten([],lookup).length === 0, "空の記録");
+  const s = session(date,40,10);
+  s.answers.push({qid:"gone",correct:true});
+  const before = JSON.stringify(s);
+  const rows = P.flatten([s],lookup);
+  assert(rows.length === 40 && rows[0].timeSec === null, "消えた qid と0秒を除く");
+  const legacy = P.flatten([{date,answers:[{qid:"q1",correct:false,chosen:null}]}],lookup);
+  assert(legacy[0].timeSec === null && !legacy[0].answered, "古い記録・未回答");
+  const win = P.categoryWindows(rows,["A"])[0];
+  assert(win.recent.n === 30 && win.prev.n === 10 && win.delta === -1, "40問を30+10へ、差を計算");
+  const short = P.categoryWindows(rows.slice(0,25),["A"])[0];
+  assert(short.prev.n === 0 && short.delta === null, "25問は前区間なし");
+  assert(P.weakest(P.categoryWindows(rows.slice(0,9),["A"])).length === 0, "10問未満を判定しない");
+  const changed = [{qid:"x",correct:false},{qid:"y",correct:true},{qid:"x",correct:true},{qid:"y",correct:false}];
+  assert(JSON.stringify(P.stillWrong(changed)) === '["y"]', "最新正誤で復習対象を決める");
+  const coverage = P.coverage(changed,10);
+  assert(coverage.solid === 1 && coverage.seen === 2 && coverage.total === 10, "網羅率は重複せず最新正誤");
+  const series = P.sessionSeries([session("2026-11-10",5,5),session("2026-11-11",10,0),session("2026-11-12",5,5),session("2026-11-13",4,4)]);
+  assert(series.length === 3 && series[0].roll === null && series[1].roll === null && series[2].roll === .5, "5問未満除外・3回から問題数で加重平均");
+  assert(P.sessionSeries([s])[0].roll === null, "1回の平均は非表示");
+  const period = P.periodStats(P.flatten([{date:"2026-11-05T14:59:59Z",answers:s.answers},{date:"2026-11-05T15:00:00Z",answers:s.answers}],lookup), new Date("2026-11-12T01:00:00Z").getTime());
+  assert(period.cur.n === 40 && period.prev.n === 40 && period.cur.days === 1, "7日の境界は現地0時");
+  const cal = P.calendar({"2026-11-12":30},Date.parse(date));
+  assert(cal.length === 12 && cal.every(c => c.length === 7) && new Date(cal[0][0].ms).getDay() === 1, "12週・月曜始まり");
+  assert(cal.flat().filter(d => d.today).length === 1 && cal.flat().find(d => d.today).n === 30, "今日の数");
+  assert(JSON.stringify([0,1,19,20,39,40,79,80].map(P.level)) === '[0,1,1,2,2,3,3,4]', "カレンダーの境界");
+  assert(P.paceByPart(rows,[5],10)[0].sec === 20, "Partの直近平均");
+  assert(P.paceByPart([{part:5,timeSec:99},{part:5,timeSec:null}],[5],1)[0].sec === null, "時間欠損でも直近問数の窓を伸ばさない");
+  assert(P.skillRecent([{date,correct:1,total:2},{date,correct:9,total:10}],3).rate === 10/12, "スキルも問題数で加重平均");
+  assert(P.skillRecent([],3).rate === null, "スキル記録なしは0%でなく未計測");
+  assert(JSON.stringify(s) === before, "入力を変更しない");
+  process.env.TZ = "America/New_York";
+  const dst = P.calendar({},Date.parse("2026-11-03T12:00:00Z"),2).flat();
+  assert(dst.every(d => new Date(d.ms).getHours() === 0) && new Set(dst.map(d => d.day)).size === 14, "夏時間終了をまたいでも現地0時・重複なし");
+  if (oldTZ === undefined) delete process.env.TZ; else process.env.TZ = oldTZ;
+  BANK.setActive("toeic");
+  const qs = BANK.allQuestions().filter(q => q.category === "読解");
+  const ss = [{date:"2026-11-10",answers:[{qid:qs[0].id,correct:false},{qid:qs[1].id,correct:true}]},{date:"2026-11-11",answers:[{qid:qs[0].id,correct:true},{qid:qs[2].id,correct:false}]}];
+  const ordered = Analysis.buildReviewSet(ss,{source:"category",category:"読解",count:"all",prefer:"weak"});
+  assert(ordered[0] === qs[2].id && ordered[1] === qs[3].id && ordered.at(-2) === qs[1].id && ordered.at(-1) === qs[0].id, "誤答→未回答→古い正解の順");
+  const shuffle = Analysis._shuffle; let shuffled = false;
+  Analysis._shuffle = a => {shuffled=true; return a;};
+  Analysis.buildReviewSet(ss,{source:"category",category:"読解",count:10});
+  assert(shuffled, "従来呼出しはシャッフルのまま");
+  Analysis._shuffle = shuffle;
+}
+
 // ---- storage.js ----
 ["js/storage.js"].forEach(f => { if (fs.existsSync(path.join(root, f))) load(f); });
 const Storage2 = ctx.Storage2;
@@ -625,5 +686,6 @@ if (swAfter) {
   }
 }
 
+console.log(assertions + " assertions");
 console.log(failures === 0 ? "ALL TESTS PASSED" : `${failures} FAILURES`);
 process.exit(failures === 0 ? 0 : 1);

@@ -149,7 +149,20 @@ var Analysis = {
         .filter(function (q) { return q.category === opts.category; })
         .map(function (q) { return q.id; });
     }
-    this._shuffle(pool);
+    if (opts.prefer === "weak" && opts.source === "category") {
+      var latest = Object.create(null);
+      sessions.forEach(function (s) {
+        var t = Date.parse(s.date);
+        if (!isFinite(t)) return;
+        (s.answers || []).forEach(function (a) {
+          if (!latest[a.qid] || t >= latest[a.qid].t) latest[a.qid] = {t:t, correct:!!a.correct};
+        });
+      });
+      function priority(id) { return !latest[id] ? 1 : latest[id].correct ? 2 : 0; }
+      pool.sort(function (a,b) { return priority(a)-priority(b) || (latest[a] ? latest[a].t : 0)-(latest[b] ? latest[b].t : 0); });
+    } else {
+      this._shuffle(pool);
+    }
     if (opts.count === "all" || pool.length <= opts.count) return pool;
     return pool.slice(0, opts.count);
   }

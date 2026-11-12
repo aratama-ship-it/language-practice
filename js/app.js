@@ -155,6 +155,10 @@ var App = {
       text: "全" + totalN + "問 / セット全体の制限時間つき・終了後に解答解説と弱点分析"
     }));
 
+    var progress = ProgressUI.buildHomeBlock(BANK.activeId);
+    root.appendChild(progress);
+    ProgressUI.draw(progress);
+
     Object.keys(BANK.vols()).map(Number).sort(function (a, b) { return a - b; })
       .forEach(function (volId) {
         var v = BANK.vols()[volId];
@@ -700,6 +704,10 @@ var App = {
     var homeBtn = this.el("div", { class: "toolbar" }, [
       this.el("button", { text: "ホームへ", onclick: function () { self.goHome(); } })
     ]);
+
+    var progress = ProgressUI.buildAnalysisBlock(BANK.activeId);
+    root.appendChild(progress);
+    ProgressUI.draw(progress);
 
     if (sessions.length === 0) {
       root.appendChild(this.el("div", { class: "card" }, [

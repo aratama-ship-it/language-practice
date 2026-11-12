@@ -1,5 +1,8 @@
 /* TOEIC Reading 練習アプリ */
 :root {
+  --sub-strong:#475569;
+  --viz-quiz:#2563eb; --viz-dict:#eb6834; --viz-lis:#1baf7a; --viz-mute:#64748b;
+  --seq-0:#e8edf3; --seq-1:#c7d9fb; --seq-2:#8fb4f6; --seq-3:#4f86ee; --seq-4:#1d4fd8;
   --bg: #f4f6f8;
   --card: #ffffff;
   --ink: #1f2a37;
@@ -155,7 +158,7 @@ input[type="text"], input[type="number"], textarea, select { font-size: 16px; }
 .bar-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 14px; }
 .bar-row .bar-label { width: 9em; flex-shrink: 0; }
 .bar-row .bar-track { flex: 1; background: var(--line); border-radius: 6px; height: 14px; overflow: hidden; }
-.bar-row .bar-fill { height: 100%; background: var(--accent); border-radius: 6px; }
+.bar-row .bar-fill { display: block; height: 100%; background: var(--accent); border-radius: 6px; }
 .bar-row .bar-value { width: 7em; text-align: right; color: var(--sub); font-size: 13px; }
 
 .result-item {
@@ -253,3 +256,96 @@ table.history th { color: var(--sub); font-weight: 600; font-size: 13px; }
   .timer { font-size: 19px; }
   .bar-row .bar-label { width: 7.5em; font-size: 12.5px; }
 }
+
+/* Home progress: mock-home-dashboard.html:58-145; TOKEN_SHEET.md. */
+.card.prog{padding:14px 16px 12px}
+.prog-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+.prog-head h2{font-size:16px;margin:0}
+.prog .prog-more{font-size:13px;color:var(--accent);background:none;border:0;padding:8px 0 8px 12px;min-height:44px;min-width:0}
+.prog-cap{font-size:12px;color:var(--sub-strong);margin:0 0 6px}
+.prog-sec{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
+.prog .prog-sec>h3{font-size:13px;color:var(--sub-strong);font-weight:700;margin:0 0 8px}
+.prog .num{font-variant-numeric:tabular-nums}
+
+/* 弱点の行 */
+.weak-list{list-style:none;margin:0;padding:0}
+.weak-list li{display:grid;grid-template-columns:1.2em minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.weak-list li:last-child{border-bottom:0}
+.prog-weak-rank{font-size:12px;color:var(--sub-strong);font-variant-numeric:tabular-nums;grid-row:1 / span 3;align-self:start;padding-top:3px}
+.prog-weak-name{font-size:15px;font-weight:700;line-height:1.4;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.prog-weak-go{grid-row:1 / span 3;grid-column:3}
+.prog-weak-meter{grid-column:2;display:flex}
+.weak-list .delta{grid-column:2}
+.meter{position:relative;flex:1 1 auto;height:10px;background:var(--line);border-radius:0 4px 4px 0;min-width:60px}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--viz-mute);border-radius:0 4px 4px 0}
+.meter.em i{background:var(--accent)}
+.meter b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.prog-weak-val{font-weight:700;color:var(--ink);font-size:16px;white-space:nowrap}
+.delta{font-size:12px;color:var(--sub-strong);white-space:nowrap}
+.redo{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px}
+.redo b{font-size:16px}
+
+/* この 7 日 */
+.week-line{font-size:13px;color:var(--sub-strong);margin:0}
+.week-line b{color:var(--ink);font-size:15px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+@media (min-width:720px){.prog .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kpi{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 12px 8px}
+.kpi .l{font-size:12px;color:var(--sub-strong)}
+.kpi .v{font-size:24px;font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:13px;font-weight:400;color:var(--sub-strong);margin-left:2px}
+.kpi .d{font-size:12px;color:var(--sub-strong)}
+
+/* 図 */
+.chart{position:relative;margin:4px 0 0}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:inherit;fill:var(--sub-strong);font-size:11px}
+.chart .end{fill:var(--ink);font-weight:700;font-size:12px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;line-height:1.5;padding:4px 8px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-110%);display:none;z-index:5}
+details.as-table{margin-top:6px;font-size:13px}
+details.as-table summary{color:var(--accent);cursor:pointer;padding:8px 0;min-height:44px;display:flex;align-items:center}
+table.pt{width:100%;border-collapse:collapse;font-size:13px}
+table.pt th,table.pt td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.pt th{font-size:12px;color:var(--sub-strong);font-weight:700;white-space:nowrap}
+table.pt td.r,table.pt th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.pt td.bar{width:26%}
+table.pt td.name{width:40%;line-height:1.4}
+@media (max-width:480px){.prog table.pt .opt{display:none}}
+table.pt tr.weak td:first-child{font-weight:700}
+.pace-row{display:grid;grid-template-columns:4.2em minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px;padding:4px 0}
+.pace-row .v{font-variant-numeric:tabular-nums;white-space:nowrap}
+.skill-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)}
+.skill-row:last-child{border-bottom:0}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:baseline}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--sub-strong);margin:2px 0 4px}
+
+/* 12 週の記録 */
+.cal{display:grid;grid-template-columns:auto repeat(12,minmax(0,1fr));gap:3px;align-items:center;margin:4px 0;max-width:380px}
+.cal .wd{font-size:11px;color:var(--sub-strong);padding-right:4px;line-height:1}
+.cal .c{aspect-ratio:1/1;border-radius:3px;background:var(--seq-0);min-width:0}
+.cal .c[data-l="1"]{background:var(--seq-1)} .cal .c[data-l="2"]{background:var(--seq-2)}
+.cal .c[data-l="3"]{background:var(--seq-3)} .cal .c[data-l="4"]{background:var(--seq-4)}
+.cal .c.future{background:transparent;border:1px dashed var(--line)}
+.cal .c.today{outline:2px solid var(--ink);outline-offset:1px}
+.cal .mo{font-size:11px;color:var(--sub-strong);text-align:left;white-space:nowrap;overflow:visible}
+.cal-key{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--sub-strong);justify-content:flex-end;max-width:380px}
+.cal-key i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.minis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+
+.mini .n{font-size:12px;color:var(--sub-strong);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .v{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.mini .v small{font-size:11px;font-weight:400;color:var(--sub-strong);margin-left:4px}
+
+/* データが少ないとき */
+.empty{font-size:14px;color:var(--sub-strong);margin:0 0 10px}
+.empty b{color:var(--ink)}
+.empty-steps{margin:0;padding-left:1.3em;font-size:13px;color:var(--sub-strong)}
+
+.prog button{min-height:44px;min-width:44px}
+.prog .delta{white-space:normal}
+.prog .skill-row svg{max-width:100%}
+.prog .cal-key{font-size:12px}
+.prog table.pt{table-layout:fixed}
+.prog table.pt td,.prog table.pt th{overflow-wrap:anywhere;white-space:normal;padding:8px 4px}
+.prog table.pt .meter{min-width:0}
+.prog .chart svg{height:var(--prog-chart-height);width:100%}

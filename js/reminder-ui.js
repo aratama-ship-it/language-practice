@@ -44,7 +44,10 @@ var ReminderUI = {
         var data = JSON.parse(raw);
         var records = data && Array.isArray(data[arrayName]) ? data[arrayName] : [];
         records.forEach(function (record) {
-          if (record && typeof record.date === "string") dates.push(record.date.slice(0, 10));
+          if (record && typeof record.date === "string") {
+            var day = Progress.localDay(record.date);
+            if (day) dates.push(day);
+          }
         });
       } catch (e) {}
     }
